@@ -1,11 +1,116 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Heart, MapPin, Calendar, Users, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
+import { useFeaturedLocations } from '@/hooks/useLocations';
+import { useFavorites } from '@/hooks/useFavorites';
+import { LocationCard } from '@/components/LocationCard';
+import { WeatherWidget } from '@/components/WeatherWidget';
 
 const Index = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { locations: featured, loading } = useFeaturedLocations();
+  const { toggleFavorite, isFavorite } = useFavorites();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-accent/20 to-secondary/30 px-4 pt-12 pb-8">
+        <div className="absolute top-4 right-4">
+          {!user ? (
+            <Button variant="outline" size="sm" onClick={() => navigate('/auth')}>Sign In</Button>
+          ) : (
+            <Button variant="ghost" size="sm" onClick={() => navigate('/profile')}>
+              <Heart className="w-5 h-5 text-primary" />
+            </Button>
+          )}
+        </div>
+        
+        <div className="max-w-lg mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-primary">Discover Enugu</span>
+          </div>
+          
+          <h1 className="font-display text-3xl md:text-4xl font-bold mb-3 text-foreground">
+            Plan Your Perfect <span className="text-gradient">Date</span>
+          </h1>
+          
+          <p className="text-muted-foreground mb-6">
+            Discover romantic spots, picnic areas, hiking trails & events in Enugu State
+          </p>
+
+          <div className="flex gap-3 justify-center flex-wrap">
+            <Button onClick={() => navigate('/explore')} className="gap-2">
+              <MapPin className="w-4 h-4" /> Explore Places
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/planner')} className="gap-2">
+              <Calendar className="w-4 h-4" /> Plan a Date
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 py-6 max-w-lg mx-auto space-y-8">
+        {/* Weather Widget */}
+        <WeatherWidget />
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-4 gap-3">
+          {[
+            { icon: '💕', label: 'Romantic', category: 'romantic' },
+            { icon: '🧺', label: 'Picnic', category: 'picnic' },
+            { icon: '🎉', label: 'Events', category: 'event' },
+            { icon: '🥾', label: 'Hiking', category: 'hiking' },
+          ].map((item) => (
+            <button
+              key={item.category}
+              onClick={() => navigate(`/explore?category=${item.category}`)}
+              className="flex flex-col items-center gap-2 p-4 bg-card rounded-xl border hover:shadow-md transition-shadow"
+            >
+              <span className="text-2xl">{item.icon}</span>
+              <span className="text-xs font-medium">{item.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Featured Locations */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display text-xl font-semibold">Featured Places</h2>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/explore')}>See all</Button>
+          </div>
+          
+          {loading ? (
+            <div className="grid gap-4">
+              {[1, 2].map((i) => (
+                <div key={i} className="h-64 bg-muted rounded-xl animate-pulse" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {featured.slice(0, 4).map((location) => (
+                <LocationCard
+                  key={location.id}
+                  location={location}
+                  isFavorite={isFavorite(location.id)}
+                  onToggleFavorite={() => toggleFavorite(location.id)}
+                  onClick={() => navigate(`/location/${location.id}`)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Community CTA */}
+        <div className="bg-gradient-to-r from-primary/10 to-accent/20 rounded-2xl p-6 text-center">
+          <Users className="w-10 h-10 text-primary mx-auto mb-3" />
+          <h3 className="font-display text-lg font-semibold mb-2">Join Our Community</h3>
+          <p className="text-sm text-muted-foreground mb-4">Share your favorite spots and discover hidden gems from others</p>
+          <Button variant="outline" onClick={() => navigate('/community')}>Explore Community</Button>
+        </div>
       </div>
     </div>
   );
