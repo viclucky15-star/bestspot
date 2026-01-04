@@ -92,7 +92,13 @@ export function useMessages(conversationId: string | undefined) {
     if (!conversationId) return;
     const channel = supabase.channel(`messages-${conversationId}`).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` }, async (payload) => {
       const { data } = await supabase.from('messages').select(`*, sender:profiles(*), location:locations(*), event:planned_events(*)`).eq('id', payload.new.id).single();
-      if (data) setMessages(prev => [...prev, { ...data, event: data.event ? { ...data.event, schedule: [] } : null } as Message]);
+      if (data) {
+        const mapped = {
+          ...data,
+          event: data.event ? { ...data.event, schedule: Array.isArray(data.event.schedule) ? data.event.schedule : [], budget_breakdown: data.event.budget_breakdown || {} } : null
+        } as unknown as Message;
+        setMessages(prev => [...prev, mapped]);
+      }
     }).subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [conversationId]);
@@ -103,7 +109,11 @@ export function useMessages(conversationId: string | undefined) {
       const { data, error } = await supabase.from('messages').insert({ conversation_id: conversationId, sender_id: user.id, content, message_type: messageType, location_id: locationId, event_id: eventId }).select(`*, sender:profiles(*), location:locations(*), event:planned_events(*)`).single();
       if (error) throw error;
       await supabase.from('conversations').update({ last_message_at: new Date().toISOString() }).eq('id', conversationId);
-      return data as Message;
+      const mapped = {
+        ...data,
+        event: data.event ? { ...data.event, schedule: Array.isArray(data.event.schedule) ? data.event.schedule : [], budget_breakdown: data.event.budget_breakdown || {} } : null
+      } as unknown as Message;
+      return mapped;
     } catch (err) { console.error('Error:', err); return null; }
   };
 

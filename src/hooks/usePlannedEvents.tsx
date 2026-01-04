@@ -70,7 +70,7 @@ export function usePlannedEvents() {
 
       if (error) throw error;
 
-      const newEvent = { ...data, schedule: Array.isArray(data.schedule) ? data.schedule : [] } as PlannedEvent;
+      const newEvent = { ...data, schedule: Array.isArray(data.schedule) ? data.schedule : [], budget_breakdown: data.budget_breakdown || {} } as unknown as PlannedEvent;
       setEvents(prev => [...prev, newEvent].sort((a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime()));
       toast({ title: "Event created! 🎉", description: `${input.title} has been added to your plans` });
       return newEvent;
