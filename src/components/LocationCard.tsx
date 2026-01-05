@@ -3,6 +3,7 @@ import { Location, Category, BudgetLevel } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { ShareButton } from '@/components/ShareButton';
 
 interface LocationCardProps {
   location: Location;
@@ -165,7 +166,7 @@ export function LocationCard({ location, isFavorite, onToggleFavorite, onClick, 
             onClick={openGoogleMaps}
           >
             <ExternalLink className="w-4 h-4 mr-1" />
-            View Map
+            Map
           </Button>
           <Button 
             variant="default" 
@@ -174,8 +175,13 @@ export function LocationCard({ location, isFavorite, onToggleFavorite, onClick, 
             onClick={getDirections}
           >
             <Navigation className="w-4 h-4 mr-1" />
-            Directions
+            Go
           </Button>
+          <ShareButton 
+            title={location.name}
+            text={`Check out ${location.name} in ${location.area}, Enugu! ${location.description || ''}`}
+            url={`${window.location.origin}/location/${location.id}`}
+          />
         </div>
       </div>
     </div>

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, MapPin, Calendar, Users, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { useFeaturedLocations } from '@/hooks/useLocations';
 import { useFavorites } from '@/hooks/useFavorites';
 import { LocationCard } from '@/components/LocationCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
+import heroImage from '@/assets/hero-picnic.jpg';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -16,39 +16,53 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-accent/20 to-secondary/30 px-4 pt-12 pb-8">
-        <div className="absolute top-4 right-4">
-          {!user ? (
-            <Button variant="outline" size="sm" onClick={() => navigate('/auth')}>Sign In</Button>
-          ) : (
-            <Button variant="ghost" size="sm" onClick={() => navigate('/profile')}>
-              <Heart className="w-5 h-5 text-primary" />
-            </Button>
-          )}
+      {/* Hero Section with Background Image */}
+      <div className="relative overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img 
+            src={heroImage} 
+            alt="Couple enjoying scenic view of Enugu" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background" />
         </div>
-        
-        <div className="max-w-lg mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">Discover Enugu</span>
+
+        <div className="relative px-4 pt-12 pb-16">
+          <div className="absolute top-4 right-4">
+            {!user ? (
+              <Button variant="secondary" size="sm" onClick={() => navigate('/auth')} className="backdrop-blur-sm">
+                Sign In
+              </Button>
+            ) : (
+              <Button variant="ghost" size="sm" onClick={() => navigate('/profile')} className="bg-background/50 backdrop-blur-sm">
+                <Heart className="w-5 h-5 text-primary" />
+              </Button>
+            )}
           </div>
           
-          <h1 className="font-display text-3xl md:text-4xl font-bold mb-3 text-foreground">
-            Plan Your Perfect <span className="text-gradient">Date</span>
-          </h1>
-          
-          <p className="text-muted-foreground mb-6">
-            Discover romantic spots, picnic areas, hiking trails & events in Enugu State
-          </p>
+          <div className="max-w-lg mx-auto text-center pt-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-background/80 backdrop-blur-sm rounded-full mb-4 shadow-lg">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-foreground">Discover Enugu</span>
+            </div>
+            
+            <h1 className="font-display text-3xl md:text-4xl font-bold mb-3 text-foreground drop-shadow-lg">
+              Plan Your Perfect <span className="text-gradient">Date</span>
+            </h1>
+            
+            <p className="text-foreground/90 mb-6 drop-shadow-md">
+              Discover romantic spots, picnic areas, hiking trails & events in Enugu State
+            </p>
 
-          <div className="flex gap-3 justify-center flex-wrap">
-            <Button onClick={() => navigate('/explore')} className="gap-2">
-              <MapPin className="w-4 h-4" /> Explore Places
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/planner')} className="gap-2">
-              <Calendar className="w-4 h-4" /> Plan a Date
-            </Button>
+            <div className="flex gap-3 justify-center flex-wrap">
+              <Button onClick={() => navigate('/explore')} className="gap-2 shadow-lg">
+                <MapPin className="w-4 h-4" /> Explore Places
+              </Button>
+              <Button variant="secondary" onClick={() => navigate('/planner')} className="gap-2 shadow-lg backdrop-blur-sm">
+                <Calendar className="w-4 h-4" /> Plan a Date
+              </Button>
+            </div>
           </div>
         </div>
       </div>
