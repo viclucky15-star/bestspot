@@ -1,17 +1,21 @@
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Calendar, Users } from 'lucide-react';
+import { MapPin, Calendar, Users, Map } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useFeaturedLocations } from '@/hooks/useLocations';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useStateSelection, STATES } from '@/hooks/useStateSelection';
 import { LocationCard } from '@/components/LocationCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
 import { MainMenu } from '@/components/MainMenu';
+import { StateSelector } from '@/components/StateSelector';
 import heroImage from '@/assets/hero-picnic.jpg';
 import bestspotLogo from '@/assets/bestspot-logo.png';
 
 const Index = () => {
   const navigate = useNavigate();
-  const { locations: featured, loading } = useFeaturedLocations();
+  const { selectedState, stateInfo } = useStateSelection();
+  const { locations: featured, loading } = useFeaturedLocations(selectedState);
   const { toggleFavorite, isFavorite } = useFavorites();
 
   return (
@@ -20,34 +24,41 @@ const Index = () => {
       <div className="relative overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
-          <img src={heroImage} alt="Couple enjoying scenic view of Enugu" className="w-full h-full object-cover" />
+          <img src={heroImage} alt="Couple enjoying scenic view" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background" />
         </div>
 
         <div className="relative px-4 pt-12 pb-16">
           {/* Top bar with menu and logo */}
-          <div className="absolute top-4 left-4 flex items-center gap-2">
-            <MainMenu />
-            <img src={bestspotLogo} alt="BestSpot" className="w-10 h-10" />
-            <span className="font-display font-bold text-foreground drop-shadow-lg">BestSpot</span>
+          <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MainMenu />
+              <img src={bestspotLogo} alt="BestSpot" className="w-10 h-10" />
+              <span className="font-display font-bold text-foreground drop-shadow-lg">BestSpot</span>
+            </div>
+            <StateSelector compact />
           </div>
           
           <div className="max-w-lg mx-auto text-center pt-8 text-white">
+            <Badge variant="secondary" className="mb-3 bg-primary/20 text-primary-foreground border-0">
+              South-East Nigeria
+            </Badge>
             <h1 className="font-display text-3xl md:text-4xl mb-3 drop-shadow-lg text-primary-foreground font-medium bg-inherit">
               Discover Your BestSpot
-              <span className="text-gradient text-4xl text-primary-foreground font-thin bg-secondary"> </span>
             </h1>
             
             <p className="text-foreground/90 mb-6 drop-shadow-md bg-[#db5783]/[0.37]">
-              Romantic spots, picnic areas, hiking trails & events in Enugu State
+              {selectedState 
+                ? `Romantic spots, picnic areas, hiking trails & events in ${selectedState} State`
+                : 'Explore 5 states across South-East Nigeria'}
             </p>
 
             <div className="flex gap-3 justify-center flex-wrap">
+              <Button onClick={() => navigate('/states')} variant="outline" className="gap-2 shadow-lg backdrop-blur-sm">
+                <Map className="w-4 h-4" /> Browse States
+              </Button>
               <Button onClick={() => navigate('/explore')} className="gap-2 shadow-lg">
                 <MapPin className="w-4 h-4" /> Explore Places
-              </Button>
-              <Button variant="secondary" onClick={() => navigate('/planner')} className="gap-2 shadow-lg backdrop-blur-sm">
-                <Calendar className="w-4 h-4" /> Plan a Date
               </Button>
             </div>
           </div>
@@ -55,6 +66,27 @@ const Index = () => {
       </div>
 
       <div className="px-4 py-6 max-w-lg mx-auto space-y-8">
+        {/* State Quick Access */}
+        <div>
+          <h2 className="font-display text-lg font-semibold mb-3">Quick Access</h2>
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {STATES.map((state) => (
+              <button
+                key={state.name}
+                onClick={() => navigate(`/explore?state=${state.name}`)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
+                  selectedState === state.name
+                    ? 'bg-primary text-primary-foreground shadow-md'
+                    : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                }`}
+              >
+                <span>{state.icon}</span>
+                <span className="text-sm font-medium">{state.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Weather Widget */}
         <WeatherWidget />
 
@@ -80,13 +112,20 @@ const Index = () => {
         {/* Featured Locations */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display text-xl font-semibold">Featured Places</h2>
+            <h2 className="font-display text-xl font-semibold">
+              Featured Places {selectedState && `in ${selectedState}`}
+            </h2>
             <Button variant="ghost" size="sm" onClick={() => navigate('/explore')}>See all</Button>
           </div>
           
           {loading ? (
             <div className="grid gap-4">
               {[1, 2].map(i => <div key={i} className="h-64 bg-muted rounded-xl animate-pulse" />)}
+            </div>
+          ) : featured.length === 0 ? (
+            <div className="text-center py-8 bg-muted/50 rounded-xl">
+              <p className="text-muted-foreground">No featured places {selectedState && `in ${selectedState}`} yet</p>
+              <Button variant="link" onClick={() => navigate('/explore')}>Explore all locations</Button>
             </div>
           ) : (
             <div className="grid gap-4">

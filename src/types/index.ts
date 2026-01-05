@@ -2,6 +2,7 @@ export type Category = 'romantic' | 'picnic' | 'event' | 'hiking';
 export type BudgetLevel = 'low' | 'medium' | 'high';
 export type EventStatus = 'upcoming' | 'completed' | 'cancelled';
 export type MessageType = 'text' | 'location' | 'event_invite';
+export type NigerianState = 'Abia' | 'Anambra' | 'Enugu' | 'Ebonyi' | 'Imo';
 
 export interface Profile {
   id: string;
@@ -21,6 +22,7 @@ export interface Location {
   id: string;
   name: string;
   description: string | null;
+  state: NigerianState;
   area: string;
   category: Category;
   budget_level: BudgetLevel;
@@ -72,6 +74,7 @@ export interface CommunityPost {
   id: string;
   user_id: string;
   location_id: string | null;
+  state: NigerianState | null;
   content: string;
   image_urls: string[];
   likes_count: number;
@@ -134,5 +137,6 @@ export interface FilterOptions {
   category?: Category | 'all';
   budgetLevel?: BudgetLevel | 'all';
   area?: string | 'all';
+  state?: NigerianState | 'all';
   searchQuery?: string;
 }
