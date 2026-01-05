@@ -1,18 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Heart, MessageCircle, MapPin, Image as ImageIcon } from 'lucide-react';
+import { Plus, Heart, MapPin, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useAuth } from '@/hooks/useAuth';
 import { useCommunityPosts } from '@/hooks/useCommunity';
+import { CommentsDialog } from '@/components/CommentsDialog';
 import { formatDistanceToNow } from 'date-fns';
 
 const Community = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { posts, loading, createPost, toggleLike } = useCommunityPosts();
+  const { posts, loading, createPost, toggleLike, refetch } = useCommunityPosts();
   const [createOpen, setCreateOpen] = useState(false);
   const [newContent, setNewContent] = useState('');
   const [posting, setPosting] = useState(false);
@@ -130,10 +131,11 @@ const Community = () => {
                     <Heart className={`w-5 h-5 ${post.has_liked ? 'fill-current' : ''}`} />
                     {post.likes_count || 0}
                   </button>
-                  <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    <MessageCircle className="w-5 h-5" />
-                    {post.comments_count || 0}
-                  </button>
+                  <CommentsDialog 
+                    postId={post.id} 
+                    commentsCount={post.comments_count || 0}
+                    onCommentAdded={refetch}
+                  />
                 </div>
               </article>
             ))}
