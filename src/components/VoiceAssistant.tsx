@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Mic, MicOff, Volume2, X, Loader2, Send } from 'lucide-react';
+import { Mic, MicOff, Volume2, VolumeX, X, Loader2, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
@@ -62,6 +62,7 @@ export const VoiceAssistant = () => {
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [transcript, setTranscript] = useState('');
@@ -165,8 +166,10 @@ export const VoiceAssistant = () => {
       const assistantMessage: Message = { role: 'assistant', content: data.reply };
       setMessages((prev) => [...prev, assistantMessage]);
 
-      // Always speak the response with ElevenLabs TTS
-      speakResponse(data.reply);
+      // Speak the response if voice is enabled
+      if (voiceEnabled) {
+        speakResponse(data.reply);
+      }
     } catch (error) {
       console.error('Voice assistant error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to get response';
@@ -175,8 +178,10 @@ export const VoiceAssistant = () => {
         title: 'Error',
         description: errorMessage,
       });
-      // Speak error message too
-      speakResponse("I'm sorry, I encountered an error. Please try again.");
+      // Speak error message too if voice is enabled
+      if (voiceEnabled) {
+        speakResponse("I'm sorry, I encountered an error. Please try again.");
+      }
     } finally {
       setIsProcessing(false);
     }
@@ -329,7 +334,26 @@ export const VoiceAssistant = () => {
 
         {/* Input Area */}
         <div className="p-4 border-t space-y-3">
-          <form onSubmit={handleSubmit} className="flex gap-2">
+          <form onSubmit={handleSubmit} className="flex gap-2 items-center">
+            <Button
+              type="button"
+              size="icon"
+              variant={voiceEnabled ? 'default' : 'outline'}
+              onClick={() => {
+                setVoiceEnabled(!voiceEnabled);
+                if (isSpeaking && voiceEnabled) {
+                  stopSpeaking();
+                }
+              }}
+              className="shrink-0"
+              title={voiceEnabled ? 'Voice responses on' : 'Voice responses off'}
+            >
+              {voiceEnabled ? (
+                <Volume2 className="w-4 h-4" />
+              ) : (
+                <VolumeX className="w-4 h-4" />
+              )}
+            </Button>
             <Input
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
@@ -337,42 +361,34 @@ export const VoiceAssistant = () => {
               disabled={isListening || isProcessing}
               className="flex-1"
             />
-            <Button type="submit" size="icon" disabled={!inputText.trim() || isProcessing}>
+            <Button
+              type="button"
+              size="icon"
+              variant={isListening ? 'destructive' : 'outline'}
+              onClick={isListening ? stopListening : startListening}
+              disabled={isProcessing}
+              className="shrink-0"
+              title={isListening ? 'Stop listening' : 'Start voice input'}
+            >
+              {isListening ? (
+                <MicOff className="w-4 h-4" />
+              ) : (
+                <Mic className="w-4 h-4" />
+              )}
+            </Button>
+            <Button type="submit" size="icon" disabled={!inputText.trim() || isProcessing} className="shrink-0">
               <Send className="w-4 h-4" />
             </Button>
           </form>
           
-          <div className="flex items-center justify-center gap-4">
-            {isSpeaking ? (
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={stopSpeaking}
-                className="rounded-full w-14 h-14"
-              >
-                <Volume2 className="w-6 h-6 text-primary animate-pulse" />
-              </Button>
-            ) : (
-              <Button
-                variant={isListening ? 'destructive' : 'default'}
-                size="lg"
-                onClick={isListening ? stopListening : startListening}
-                disabled={isProcessing}
-                className="rounded-full w-14 h-14"
-              >
-                {isListening ? (
-                  <MicOff className="w-6 h-6" />
-                ) : (
-                  <Mic className="w-6 h-6" />
-                )}
-              </Button>
-            )}
-          </div>
-          
           <p className="text-xs text-center text-muted-foreground">
             {isListening
-              ? 'Speak now... tap to stop'
-              : 'Tap the microphone to speak'}
+              ? 'Speak now... tap mic to stop'
+              : isSpeaking
+              ? 'Speaking... tap speaker to toggle voice'
+              : voiceEnabled
+              ? 'Voice responses enabled'
+              : 'Voice responses disabled'}
           </p>
         </div>
       </div>
