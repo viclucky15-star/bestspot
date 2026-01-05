@@ -1,0 +1,16 @@
+{
+  "name": "BestSpot",
+  "short_name": "BestSpot",
+  "description": "Discover romantic spots, picnic areas, hiking trails & events in Enugu State",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fdfaf7",
+  "theme_color": "#db2777",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}
