@@ -85,16 +85,30 @@ export function useWeather() {
   useEffect(() => {
     fetchWeather();
     
-    // Auto-refresh every 30 minutes
-    const interval = setInterval(fetchWeather, 30 * 60 * 1000);
+    // Auto-refresh every 15 minutes for more up-to-date data
+    const interval = setInterval(fetchWeather, 15 * 60 * 1000);
     
-    // Also refresh when window regains focus
+    // Refresh when window regains focus
     const handleFocus = () => fetchWeather();
     window.addEventListener('focus', handleFocus);
+    
+    // Refresh when user comes back online
+    const handleOnline = () => fetchWeather();
+    window.addEventListener('online', handleOnline);
+    
+    // Refresh when page becomes visible again
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchWeather();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     
     return () => {
       clearInterval(interval);
       window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('online', handleOnline);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [fetchWeather]);
 

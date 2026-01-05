@@ -165,15 +165,18 @@ export const VoiceAssistant = () => {
       const assistantMessage: Message = { role: 'assistant', content: data.reply };
       setMessages((prev) => [...prev, assistantMessage]);
 
-      // Generate and play TTS
-      await speakResponse(data.reply);
+      // Always speak the response with ElevenLabs TTS
+      speakResponse(data.reply);
     } catch (error) {
       console.error('Voice assistant error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to get response';
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to get response',
+        description: errorMessage,
       });
+      // Speak error message too
+      speakResponse("I'm sorry, I encountered an error. Please try again.");
     } finally {
       setIsProcessing(false);
     }
