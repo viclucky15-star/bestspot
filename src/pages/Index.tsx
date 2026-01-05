@@ -6,6 +6,8 @@ import { useFeaturedLocations } from '@/hooks/useLocations';
 import { useFavorites } from '@/hooks/useFavorites';
 import { LocationCard } from '@/components/LocationCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { NotificationBell } from '@/components/NotificationBell';
 import heroImage from '@/assets/hero-picnic.jpg';
 
 const Index = () => {
@@ -29,7 +31,10 @@ const Index = () => {
         </div>
 
         <div className="relative px-4 pt-12 pb-16">
-          <div className="absolute top-4 right-4">
+          {/* Top bar with theme toggle, notifications, and auth */}
+          <div className="absolute top-4 right-4 flex items-center gap-2">
+            <ThemeToggle />
+            <NotificationBell />
             {!user ? (
               <Button variant="secondary" size="sm" onClick={() => navigate('/auth')} className="backdrop-blur-sm">
                 Sign In
@@ -44,15 +49,15 @@ const Index = () => {
           <div className="max-w-lg mx-auto text-center pt-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-background/80 backdrop-blur-sm rounded-full mb-4 shadow-lg">
               <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-foreground">Discover Enugu</span>
+              <span className="text-sm font-medium text-foreground">BestSpot</span>
             </div>
             
             <h1 className="font-display text-3xl md:text-4xl font-bold mb-3 text-foreground drop-shadow-lg">
-              Plan Your Perfect <span className="text-gradient">Date</span>
+              Discover Your <span className="text-gradient">Perfect Spot</span>
             </h1>
             
             <p className="text-foreground/90 mb-6 drop-shadow-md">
-              Discover romantic spots, picnic areas, hiking trails & events in Enugu State
+              Romantic spots, picnic areas, hiking trails & events in Enugu State
             </p>
 
             <div className="flex gap-3 justify-center flex-wrap">
