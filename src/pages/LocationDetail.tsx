@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Heart, MapPin, Clock, DollarSign, Star, Share2, Calendar, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Heart, MapPin, Clock, NairaSign, Star, Share2, Calendar, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
