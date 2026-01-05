@@ -7,6 +7,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { VoiceAssistant } from "@/components/VoiceAssistant";
+import { useServiceWorker } from "@/hooks/useServiceWorker";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Explore from "./pages/Explore";
@@ -19,6 +20,12 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Component that initializes service worker
+function ServiceWorkerInit() {
+  useServiceWorker();
+  return null;
+}
+
 const App = () => (
   <ThemeProvider>
     <QueryClientProvider client={queryClient}>
@@ -27,6 +34,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <ServiceWorkerInit />
             <div className="min-h-screen pb-20">
               <Routes>
                 <Route path="/" element={<Index />} />
