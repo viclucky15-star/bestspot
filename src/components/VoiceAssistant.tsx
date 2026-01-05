@@ -1,9 +1,10 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Mic, MicOff, Volume2, X, Sparkles, Loader2, Send } from 'lucide-react';
+import { Mic, MicOff, Volume2, X, Loader2, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import aiAssistantIcon from '@/assets/ai-assistant-icon.png';
 
 // Type declarations for Web Speech API
 interface SpeechRecognitionEvent extends Event {
@@ -246,10 +247,10 @@ export const VoiceAssistant = () => {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-4 z-50 bg-primary text-primary-foreground rounded-full p-4 shadow-lg hover:shadow-xl transition-all hover:scale-105 animate-pulse-subtle"
+        className="fixed bottom-24 right-4 z-50 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 overflow-hidden"
         aria-label="Open voice assistant"
       >
-        <Sparkles className="w-6 h-6" />
+        <img src={aiAssistantIcon} alt="Date Assistant" className="w-14 h-14 object-cover" />
       </button>
     );
   }
@@ -264,9 +265,7 @@ export const VoiceAssistant = () => {
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
+            <img src={aiAssistantIcon} alt="Date Assistant" className="w-10 h-10 rounded-full object-cover" />
             <div>
               <h3 className="font-semibold">Date Assistant</h3>
               <p className="text-xs text-muted-foreground">
@@ -283,7 +282,7 @@ export const VoiceAssistant = () => {
         <div className="h-64 overflow-y-auto p-4 space-y-3">
           {messages.length === 0 && (
             <div className="text-center text-muted-foreground py-8">
-              <Sparkles className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <img src={aiAssistantIcon} alt="Date Assistant" className="w-16 h-16 mx-auto mb-3 rounded-full opacity-80" />
               <p className="text-sm">Hi! I'm your date planning assistant.</p>
               <p className="text-xs mt-1">Ask me for location suggestions, gift ideas, or romantic messages!</p>
             </div>
