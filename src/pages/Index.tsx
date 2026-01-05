@@ -6,8 +6,8 @@ import { useFeaturedLocations } from '@/hooks/useLocations';
 import { useFavorites } from '@/hooks/useFavorites';
 import { LocationCard } from '@/components/LocationCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { NotificationBell } from '@/components/NotificationBell';
+import { MainMenu } from '@/components/MainMenu';
 import heroImage from '@/assets/hero-picnic.jpg';
 import bestspotLogo from '@/assets/bestspot-logo.png';
 const Index = () => {
@@ -33,13 +33,13 @@ const Index = () => {
         </div>
 
         <div className="relative px-4 pt-12 pb-16">
-          {/* Top bar with logo, theme toggle, notifications, and auth */}
+          {/* Top bar with menu, logo, notifications, and auth */}
           <div className="absolute top-4 left-4 flex items-center gap-2">
+            <MainMenu />
             <img src={bestspotLogo} alt="BestSpot" className="w-10 h-10" />
             <span className="font-display font-bold text-foreground drop-shadow-lg">BestSpot</span>
           </div>
           <div className="absolute top-4 right-4 flex items-center gap-2">
-            <ThemeToggle />
             <NotificationBell />
             {!user ? <Button variant="secondary" size="sm" onClick={() => navigate('/auth')} className="backdrop-blur-sm">
                 Sign In
