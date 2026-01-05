@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Heart, MapPin, Clock, NairaSign, Star, Share2, Calendar, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Heart, MapPin, Clock, Wallet, Star, Share2, Calendar, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
@@ -142,7 +142,7 @@ const LocationDetail = () => {
           {/* Details Grid */}
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div className="bg-muted/50 rounded-xl p-4">
-              <DollarSign className="w-5 h-5 text-primary mb-2" />
+              <Wallet className="w-5 h-5 text-primary mb-2" />
               <p className="text-sm font-medium">{getBudgetLabel(location.budget_level)}</p>
               {location.estimated_budget_min && location.estimated_budget_max && (
                 <p className="text-xs text-muted-foreground">

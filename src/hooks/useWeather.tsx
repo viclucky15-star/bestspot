@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { WeatherData, WeatherCondition } from '@/types';
 
 const ENUGU_LAT = 6.4584;
@@ -40,50 +40,63 @@ export function useWeather() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    const fetchWeather = async () => {
-      try {
-        const response = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${ENUGU_LAT}&longitude=${ENUGU_LON}&daily=weathercode,temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,windspeed_10m_max&timezone=Africa/Lagos`
-        );
+  const fetchWeather = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${ENUGU_LAT}&longitude=${ENUGU_LON}&daily=weathercode,temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,windspeed_10m_max&timezone=Africa/Lagos`
+      );
 
-        if (!response.ok) throw new Error('Failed to fetch weather');
+      if (!response.ok) throw new Error('Failed to fetch weather');
 
-        const data = await response.json();
+      const data = await response.json();
 
-        const weatherData: WeatherData[] = data.daily.time.slice(0, 5).map((date: string, index: number) => {
-          const code = data.daily.weathercode[index];
-          const condition = getWeatherCondition(code);
-          
-          return {
-            date,
-            temperature: Math.round((data.daily.temperature_2m_max[index] + data.daily.temperature_2m_min[index]) / 2),
-            condition,
-            description: getWeatherDescription(condition),
-            humidity: data.daily.relative_humidity_2m_max[index],
-            windSpeed: Math.round(data.daily.windspeed_10m_max[index]),
-            icon: getWeatherIcon(condition),
-          };
-        });
+      const weatherData: WeatherData[] = data.daily.time.slice(0, 5).map((date: string, index: number) => {
+        const code = data.daily.weathercode[index];
+        const condition = getWeatherCondition(code);
+        
+        return {
+          date,
+          temperature: Math.round((data.daily.temperature_2m_max[index] + data.daily.temperature_2m_min[index]) / 2),
+          condition,
+          description: getWeatherDescription(condition),
+          humidity: data.daily.relative_humidity_2m_max[index],
+          windSpeed: Math.round(data.daily.windspeed_10m_max[index]),
+          icon: getWeatherIcon(condition),
+        };
+      });
 
-        setWeather(weatherData);
-      } catch (err) {
-        setError(err as Error);
-        // Fallback weather data
-        setWeather([
-          { date: new Date().toISOString().split('T')[0], temperature: 28, condition: 'sunny', description: 'Clear skies', humidity: 65, windSpeed: 12, icon: '☀️' },
-          { date: new Date(Date.now() + 86400000).toISOString().split('T')[0], temperature: 27, condition: 'partly_cloudy', description: 'Partly cloudy', humidity: 70, windSpeed: 10, icon: '⛅' },
-          { date: new Date(Date.now() + 172800000).toISOString().split('T')[0], temperature: 26, condition: 'cloudy', description: 'Overcast', humidity: 75, windSpeed: 8, icon: '☁️' },
-          { date: new Date(Date.now() + 259200000).toISOString().split('T')[0], temperature: 25, condition: 'rainy', description: 'Light rain', humidity: 85, windSpeed: 15, icon: '🌧️' },
-          { date: new Date(Date.now() + 345600000).toISOString().split('T')[0], temperature: 28, condition: 'sunny', description: 'Clear skies', humidity: 60, windSpeed: 11, icon: '☀️' },
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWeather();
+      setWeather(weatherData);
+      setError(null);
+    } catch (err) {
+      setError(err as Error);
+      // Fallback weather data
+      setWeather([
+        { date: new Date().toISOString().split('T')[0], temperature: 28, condition: 'sunny', description: 'Clear skies', humidity: 65, windSpeed: 12, icon: '☀️' },
+        { date: new Date(Date.now() + 86400000).toISOString().split('T')[0], temperature: 27, condition: 'partly_cloudy', description: 'Partly cloudy', humidity: 70, windSpeed: 10, icon: '⛅' },
+        { date: new Date(Date.now() + 172800000).toISOString().split('T')[0], temperature: 26, condition: 'cloudy', description: 'Overcast', humidity: 75, windSpeed: 8, icon: '☁️' },
+        { date: new Date(Date.now() + 259200000).toISOString().split('T')[0], temperature: 25, condition: 'rainy', description: 'Light rain', humidity: 85, windSpeed: 15, icon: '🌧️' },
+        { date: new Date(Date.now() + 345600000).toISOString().split('T')[0], temperature: 28, condition: 'sunny', description: 'Clear skies', humidity: 60, windSpeed: 11, icon: '☀️' },
+      ]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchWeather();
+    
+    // Auto-refresh every 30 minutes
+    const interval = setInterval(fetchWeather, 30 * 60 * 1000);
+    
+    // Also refresh when window regains focus
+    const handleFocus = () => fetchWeather();
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [fetchWeather]);
 
   const getWeatherSuggestion = (condition: WeatherCondition): string => {
     switch (condition) {
