@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Heart, MapPin, MessageCircle } from 'lucide-react';
+import { Plus, Heart, MapPin, MessageCircle, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCommunityPosts } from '@/hooks/useCommunity';
 import { CommentsDialog } from '@/components/CommentsDialog';
 import { formatDistanceToNow } from 'date-fns';
+import { toast } from 'sonner';
 
 const Community = () => {
   const navigate = useNavigate();
@@ -136,6 +137,36 @@ const Community = () => {
                     commentsCount={post.comments_count || 0}
                     onCommentAdded={refetch}
                   />
+                  <button
+                    onClick={async () => {
+                      const shareUrl = `${window.location.origin}/community#post-${post.id}`;
+                      const shareText = post.content.slice(0, 100) + (post.content.length > 100 ? '...' : '');
+                      
+                      if (navigator.share) {
+                        try {
+                          await navigator.share({
+                            title: `Post by ${post.profile?.full_name || 'BestSpot User'}`,
+                            text: shareText,
+                            url: shareUrl,
+                          });
+                        } catch (err) {
+                          if ((err as Error).name !== 'AbortError') {
+                            toast.error('Failed to share');
+                          }
+                        }
+                      } else {
+                        try {
+                          await navigator.clipboard.writeText(shareUrl);
+                          toast.success('Link copied to clipboard!');
+                        } catch {
+                          toast.error('Failed to copy link');
+                        }
+                      }
+                    }}
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <Share2 className="w-5 h-5" />
+                  </button>
                 </div>
               </article>
             ))}
