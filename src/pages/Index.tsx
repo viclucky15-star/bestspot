@@ -1,29 +1,21 @@
 import { useNavigate } from 'react-router-dom';
-import { Heart, MapPin, Calendar, Users } from 'lucide-react';
+import { MapPin, Calendar, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
 import { useFeaturedLocations } from '@/hooks/useLocations';
 import { useFavorites } from '@/hooks/useFavorites';
 import { LocationCard } from '@/components/LocationCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
-import { NotificationBell } from '@/components/NotificationBell';
 import { MainMenu } from '@/components/MainMenu';
 import heroImage from '@/assets/hero-picnic.jpg';
 import bestspotLogo from '@/assets/bestspot-logo.png';
+
 const Index = () => {
   const navigate = useNavigate();
-  const {
-    user
-  } = useAuth();
-  const {
-    locations: featured,
-    loading
-  } = useFeaturedLocations();
-  const {
-    toggleFavorite,
-    isFavorite
-  } = useFavorites();
-  return <div className="min-h-screen bg-background">
+  const { locations: featured, loading } = useFeaturedLocations();
+  const { toggleFavorite, isFavorite } = useFavorites();
+
+  return (
+    <div className="min-h-screen bg-background">
       {/* Hero Section with Background Image */}
       <div className="relative overflow-hidden">
         {/* Background Image */}
@@ -33,25 +25,17 @@ const Index = () => {
         </div>
 
         <div className="relative px-4 pt-12 pb-16">
-          {/* Top bar with menu, logo, notifications, and auth */}
+          {/* Top bar with menu and logo */}
           <div className="absolute top-4 left-4 flex items-center gap-2">
             <MainMenu />
             <img src={bestspotLogo} alt="BestSpot" className="w-10 h-10" />
             <span className="font-display font-bold text-foreground drop-shadow-lg">BestSpot</span>
           </div>
-          <div className="absolute top-4 right-4 flex items-center gap-2">
-            <NotificationBell />
-            {!user ? <Button variant="secondary" size="sm" onClick={() => navigate('/auth')} className="backdrop-blur-sm">
-                Sign In
-              </Button> : <Button variant="ghost" size="sm" onClick={() => navigate('/profile')} className="bg-background/50 backdrop-blur-sm">
-                <Heart className="w-5 h-5 text-primary" />
-              </Button>}
-          </div>
           
           <div className="max-w-lg mx-auto text-center pt-8 text-white">
-            
-            
-            <h1 className="font-display text-3xl md:text-4xl mb-3 drop-shadow-lg text-primary-foreground font-medium bg-inherit">Discover Your BestSpot<span className="text-gradient text-4xl text-primary-foreground font-thin bg-secondary"> </span>
+            <h1 className="font-display text-3xl md:text-4xl mb-3 drop-shadow-lg text-primary-foreground font-medium bg-inherit">
+              Discover Your BestSpot
+              <span className="text-gradient text-4xl text-primary-foreground font-thin bg-secondary"> </span>
             </h1>
             
             <p className="text-foreground/90 mb-6 drop-shadow-md bg-[#db5783]/[0.37]">
@@ -76,26 +60,21 @@ const Index = () => {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-4 gap-3">
-          {[{
-          icon: '💕',
-          label: 'Romantic',
-          category: 'romantic'
-        }, {
-          icon: '🧺',
-          label: 'Picnic',
-          category: 'picnic'
-        }, {
-          icon: '🎉',
-          label: 'Events',
-          category: 'event'
-        }, {
-          icon: '🥾',
-          label: 'Hiking',
-          category: 'hiking'
-        }].map(item => <button key={item.category} onClick={() => navigate(`/explore?category=${item.category}`)} className="flex flex-col items-center gap-2 p-4 bg-card rounded-xl border hover:shadow-md transition-shadow">
+          {[
+            { icon: '💕', label: 'Romantic', category: 'romantic' },
+            { icon: '🧺', label: 'Picnic', category: 'picnic' },
+            { icon: '🎉', label: 'Events', category: 'event' },
+            { icon: '🥾', label: 'Hiking', category: 'hiking' }
+          ].map(item => (
+            <button 
+              key={item.category} 
+              onClick={() => navigate(`/explore?category=${item.category}`)} 
+              className="flex flex-col items-center gap-2 p-4 bg-card rounded-xl border hover:shadow-md transition-shadow"
+            >
               <span className="text-2xl">{item.icon}</span>
               <span className="text-xs font-medium">{item.label}</span>
-            </button>)}
+            </button>
+          ))}
         </div>
 
         {/* Featured Locations */}
@@ -105,11 +84,23 @@ const Index = () => {
             <Button variant="ghost" size="sm" onClick={() => navigate('/explore')}>See all</Button>
           </div>
           
-          {loading ? <div className="grid gap-4">
+          {loading ? (
+            <div className="grid gap-4">
               {[1, 2].map(i => <div key={i} className="h-64 bg-muted rounded-xl animate-pulse" />)}
-            </div> : <div className="grid gap-4">
-              {featured.slice(0, 4).map(location => <LocationCard key={location.id} location={location} isFavorite={isFavorite(location.id)} onToggleFavorite={() => toggleFavorite(location.id)} onClick={() => navigate(`/location/${location.id}`)} />)}
-            </div>}
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {featured.slice(0, 4).map(location => (
+                <LocationCard 
+                  key={location.id} 
+                  location={location} 
+                  isFavorite={isFavorite(location.id)} 
+                  onToggleFavorite={() => toggleFavorite(location.id)} 
+                  onClick={() => navigate(`/location/${location.id}`)} 
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Community CTA */}
@@ -120,6 +111,8 @@ const Index = () => {
           <Button variant="outline" onClick={() => navigate('/community')}>Explore Community</Button>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
