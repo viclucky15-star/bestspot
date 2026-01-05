@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Location, FilterOptions } from '@/types';
+import { Location, FilterOptions, NigerianState } from '@/types';
 
 export function useLocations(filters?: FilterOptions) {
   const [locations, setLocations] = useState<Location[]>([]);
@@ -17,6 +17,10 @@ export function useLocations(filters?: FilterOptions) {
         .select('*')
         .order('is_featured', { ascending: false })
         .order('rating', { ascending: false });
+
+      if (filters?.state && filters.state !== 'all') {
+        query = query.eq('state', filters.state);
+      }
 
       if (filters?.category && filters.category !== 'all') {
         query = query.eq('category', filters.category);
@@ -44,7 +48,7 @@ export function useLocations(filters?: FilterOptions) {
     } finally {
       setLoading(false);
     }
-  }, [filters?.category, filters?.budgetLevel, filters?.area, filters?.searchQuery]);
+  }, [filters?.state, filters?.category, filters?.budgetLevel, filters?.area, filters?.searchQuery]);
 
   useEffect(() => {
     fetchLocations();
@@ -89,37 +93,49 @@ export function useLocation(id: string | undefined) {
   return { location, loading, error };
 }
 
-export function useFeaturedLocations() {
+export function useFeaturedLocations(state?: NigerianState | null) {
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFeatured = async () => {
-      const { data } = await supabase
+      let query = supabase
         .from('locations')
         .select('*')
         .eq('is_featured', true)
         .order('rating', { ascending: false })
         .limit(6);
 
+      if (state) {
+        query = query.eq('state', state);
+      }
+
+      const { data } = await query;
+
       setLocations((data as Location[]) || []);
       setLoading(false);
     };
 
     fetchFeatured();
-  }, []);
+  }, [state]);
 
   return { locations, loading };
 }
 
-export function useAreas() {
+export function useAreas(state?: NigerianState | null) {
   const [areas, setAreas] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchAreas = async () => {
-      const { data } = await supabase
+      let query = supabase
         .from('locations')
         .select('area');
+
+      if (state) {
+        query = query.eq('state', state);
+      }
+
+      const { data } = await query;
 
       if (data) {
         const uniqueAreas = [...new Set(data.map(d => d.area))].sort();
@@ -128,7 +144,28 @@ export function useAreas() {
     };
 
     fetchAreas();
-  }, []);
+  }, [state]);
 
   return areas;
+}
+
+export function useStates() {
+  const [states, setStates] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchStates = async () => {
+      const { data } = await supabase
+        .from('locations')
+        .select('state');
+
+      if (data) {
+        const uniqueStates = [...new Set(data.map(d => d.state))].sort();
+        setStates(uniqueStates);
+      }
+    };
+
+    fetchStates();
+  }, []);
+
+  return states;
 }

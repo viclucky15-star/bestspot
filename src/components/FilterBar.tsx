@@ -1,16 +1,18 @@
 import { useState } from 'react';
-import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { Search, SlidersHorizontal, X, MapPin } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Category, BudgetLevel, FilterOptions } from '@/types';
+import { Category, BudgetLevel, FilterOptions, NigerianState } from '@/types';
 import { cn } from '@/lib/utils';
+import { STATES } from '@/hooks/useStateSelection';
 
 interface FilterBarProps {
   filters: FilterOptions;
   onFiltersChange: (filters: FilterOptions) => void;
   areas: string[];
+  showStateFilter?: boolean;
 }
 
 const categories: { value: Category | 'all'; label: string; icon: string }[] = [
@@ -28,13 +30,14 @@ const budgetLevels: { value: BudgetLevel | 'all'; label: string }[] = [
   { value: 'high', label: '₦₦₦ Premium' },
 ];
 
-export function FilterBar({ filters, onFiltersChange, areas }: FilterBarProps) {
+export function FilterBar({ filters, onFiltersChange, areas, showStateFilter = true }: FilterBarProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const activeFiltersCount = [
     filters.category !== 'all' && filters.category,
     filters.budgetLevel !== 'all' && filters.budgetLevel,
     filters.area !== 'all' && filters.area,
+    filters.state !== 'all' && filters.state,
   ].filter(Boolean).length;
 
   const clearFilters = () => {
@@ -42,6 +45,7 @@ export function FilterBar({ filters, onFiltersChange, areas }: FilterBarProps) {
       category: 'all',
       budgetLevel: 'all',
       area: 'all',
+      state: 'all',
       searchQuery: '',
     });
   };
@@ -92,12 +96,49 @@ export function FilterBar({ filters, onFiltersChange, areas }: FilterBarProps) {
               )}
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[70vh] rounded-t-3xl">
+          <SheetContent side="bottom" className="h-[80vh] rounded-t-3xl overflow-y-auto">
             <SheetHeader>
               <SheetTitle className="font-display text-xl">Filter Locations</SheetTitle>
             </SheetHeader>
             
             <div className="space-y-6 mt-6">
+              {/* State Selection */}
+              {showStateFilter && (
+                <div>
+                  <h4 className="font-medium mb-3 flex items-center gap-2">
+                    <MapPin className="w-4 h-4" />
+                    State
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => onFiltersChange({ ...filters, state: 'all', area: 'all' })}
+                      className={cn(
+                        "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
+                        filters.state === 'all'
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary text-secondary-foreground"
+                      )}
+                    >
+                      🗺️ All States
+                    </button>
+                    {STATES.map((state) => (
+                      <button
+                        key={state.name}
+                        onClick={() => onFiltersChange({ ...filters, state: state.name, area: 'all' })}
+                        className={cn(
+                          "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
+                          filters.state === state.name
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-secondary text-secondary-foreground"
+                        )}
+                      >
+                        {state.icon} {state.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Budget Level */}
               <div>
                 <h4 className="font-medium mb-3">Budget</h4>
@@ -121,7 +162,9 @@ export function FilterBar({ filters, onFiltersChange, areas }: FilterBarProps) {
 
               {/* Area */}
               <div>
-                <h4 className="font-medium mb-3">Area in Enugu</h4>
+                <h4 className="font-medium mb-3">
+                  City / Area {filters.state !== 'all' && `in ${filters.state}`}
+                </h4>
                 <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">
                   <button
                     onClick={() => onFiltersChange({ ...filters, area: 'all' })}
@@ -174,6 +217,16 @@ export function FilterBar({ filters, onFiltersChange, areas }: FilterBarProps) {
         {/* Active filter badges */}
         {activeFiltersCount > 0 && (
           <div className="flex gap-2 overflow-x-auto">
+            {filters.state !== 'all' && filters.state && (
+              <Badge 
+                variant="secondary" 
+                className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
+                onClick={() => onFiltersChange({ ...filters, state: 'all', area: 'all' })}
+              >
+                {STATES.find(s => s.name === filters.state)?.icon} {filters.state}
+                <X className="w-3 h-3 ml-1" />
+              </Badge>
+            )}
             {filters.category !== 'all' && (
               <Badge 
                 variant="secondary" 

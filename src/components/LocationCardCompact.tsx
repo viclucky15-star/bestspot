@@ -30,13 +30,13 @@ export function LocationCardCompact({ location, isFavorite, onToggleFavorite, on
 
   const openGoogleMaps = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const query = encodeURIComponent(`${location.name} Enugu Nigeria`);
+    const query = encodeURIComponent(`${location.name} ${location.area} ${location.state || 'Enugu'} Nigeria`);
     window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
   };
 
   const getDirections = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const query = encodeURIComponent(`${location.name} Enugu Nigeria`);
+    const query = encodeURIComponent(`${location.name} ${location.area} ${location.state || 'Enugu'} Nigeria`);
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${query}`, '_blank');
   };
 
@@ -94,7 +94,7 @@ export function LocationCardCompact({ location, isFavorite, onToggleFavorite, on
         <h3 className="font-semibold text-sm leading-tight line-clamp-1 mb-1">{location.name}</h3>
         <p className="text-xs text-muted-foreground flex items-center gap-1 mb-2">
           <MapPin className="w-3 h-3 flex-shrink-0" />
-          <span className="line-clamp-1">{location.area}</span>
+          <span className="line-clamp-1">{location.area}{location.state && `, ${location.state}`}</span>
         </p>
         
         {/* Map buttons */}

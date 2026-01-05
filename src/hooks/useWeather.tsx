@@ -1,8 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import { WeatherData, WeatherCondition } from '@/types';
+import { WeatherData, WeatherCondition, NigerianState } from '@/types';
 
-const ENUGU_LAT = 6.4584;
-const ENUGU_LON = 7.5464;
+// State coordinates
+const STATE_COORDS: Record<NigerianState, { lat: number; lon: number; city: string }> = {
+  Abia: { lat: 5.5320, lon: 7.4860, city: 'Umuahia' },
+  Anambra: { lat: 6.2100, lon: 7.0700, city: 'Awka' },
+  Enugu: { lat: 6.4584, lon: 7.5464, city: 'Enugu' },
+  Ebonyi: { lat: 6.3249, lon: 8.1137, city: 'Abakaliki' },
+  Imo: { lat: 5.4836, lon: 7.0333, city: 'Owerri' },
+};
 
 const getWeatherCondition = (code: number): WeatherCondition => {
   if (code === 0 || code === 1) return 'sunny';
@@ -35,15 +41,19 @@ const getWeatherIcon = (condition: WeatherCondition): string => {
   }
 };
 
-export function useWeather() {
+export function useWeather(state: NigerianState = 'Enugu') {
   const [weather, setWeather] = useState<WeatherData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [currentCity, setCurrentCity] = useState(STATE_COORDS[state].city);
 
   const fetchWeather = useCallback(async () => {
+    const coords = STATE_COORDS[state];
+    setCurrentCity(coords.city);
+    
     try {
       const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${ENUGU_LAT}&longitude=${ENUGU_LON}&daily=weathercode,temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,windspeed_10m_max&timezone=Africa/Lagos`
+        `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,windspeed_10m_max&timezone=Africa/Lagos`
       );
 
       if (!response.ok) throw new Error('Failed to fetch weather');
@@ -80,7 +90,7 @@ export function useWeather() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [state]);
 
   useEffect(() => {
     fetchWeather();
@@ -129,5 +139,5 @@ export function useWeather() {
     }
   };
 
-  return { weather, loading, error, getWeatherSuggestion, today: weather[0] };
+  return { weather, loading, error, getWeatherSuggestion, today: weather[0], currentCity, state };
 }

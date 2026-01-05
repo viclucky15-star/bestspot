@@ -32,13 +32,13 @@ export function LocationCard({ location, isFavorite, onToggleFavorite, onClick, 
 
   const openGoogleMaps = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const query = encodeURIComponent(`${location.name} Enugu Nigeria`);
+    const query = encodeURIComponent(`${location.name} ${location.area} ${location.state || 'Enugu'} Nigeria`);
     window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
   };
 
   const getDirections = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const query = encodeURIComponent(`${location.name} Enugu Nigeria`);
+    const query = encodeURIComponent(`${location.name} ${location.area} ${location.state || 'Enugu'} Nigeria`);
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${query}`, '_blank');
   };
 
@@ -134,7 +134,7 @@ export function LocationCard({ location, isFavorite, onToggleFavorite, onClick, 
 
         <p className="text-sm text-muted-foreground flex items-center gap-1 mb-2">
           <MapPin className="w-4 h-4" />
-          {location.area}
+          {location.area}{location.state && `, ${location.state}`}
         </p>
 
         {location.description && (
@@ -179,7 +179,7 @@ export function LocationCard({ location, isFavorite, onToggleFavorite, onClick, 
           </Button>
           <ShareButton 
             title={location.name}
-            text={`Check out ${location.name} in ${location.area}, Enugu! ${location.description || ''}`}
+            text={`Check out ${location.name} in ${location.area}, ${location.state || 'Enugu'}! ${location.description || ''}`}
             url={`${window.location.origin}/location/${location.id}`}
           />
         </div>

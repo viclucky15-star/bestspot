@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLocations, useAreas } from '@/hooks/useLocations';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useStateSelection } from '@/hooks/useStateSelection';
 import { LocationCardCompact } from '@/components/LocationCardCompact';
 import { FilterBar } from '@/components/FilterBar';
-import { FilterOptions, Category } from '@/types';
+import { StateSelector } from '@/components/StateSelector';
+import { FilterOptions, Category, NigerianState } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Heart, Mountain, Calendar, Sparkles } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Heart, Mountain, Calendar, Sparkles, MapPin } from 'lucide-react';
 
 const categoryInfo: Record<Category, { label: string; icon: React.ReactNode; color: string }> = {
   romantic: { label: 'Romantic', icon: <Heart className="w-4 h-4" />, color: 'text-romantic' },
@@ -19,17 +22,28 @@ const Explore = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialCategory = searchParams.get('category') as Category | null;
+  const initialState = searchParams.get('state') as NigerianState | null;
+  
+  const { selectedState } = useStateSelection();
   
   const [filters, setFilters] = useState<FilterOptions>({
     category: initialCategory || 'all',
     budgetLevel: 'all',
     area: 'all',
+    state: initialState || selectedState || 'all',
     searchQuery: '',
   });
 
+  // Update filters when selected state changes from context
+  useEffect(() => {
+    if (selectedState && filters.state === 'all') {
+      setFilters(prev => ({ ...prev, state: selectedState }));
+    }
+  }, [selectedState]);
+
   const { locations, loading } = useLocations(filters);
   const { toggleFavorite, isFavorite } = useFavorites();
-  const areas = useAreas();
+  const areas = useAreas(filters.state !== 'all' ? filters.state : null);
 
   // Group locations by category
   const groupedLocations = locations.reduce((acc, location) => {
@@ -45,11 +59,26 @@ const Explore = () => {
   const categoryOrder: Category[] = ['picnic', 'romantic', 'hiking', 'event'];
   const orderedCategories = categoryOrder.filter(cat => groupedLocations[cat]?.length > 0);
 
+  const getTitle = () => {
+    if (filters.state !== 'all') {
+      return `Explore ${filters.state}`;
+    }
+    return 'Explore South-East Nigeria';
+  };
+
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg border-b px-4 py-4">
-        <h1 className="font-display text-2xl font-bold mb-4">Explore Enugu</h1>
-        <FilterBar filters={filters} onFiltersChange={setFilters} areas={areas} />
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="font-display text-2xl font-bold">{getTitle()}</h1>
+          <StateSelector compact />
+        </div>
+        <FilterBar 
+          filters={filters} 
+          onFiltersChange={setFilters} 
+          areas={areas}
+          showStateFilter={true}
+        />
       </div>
 
       <div className="px-4 py-6 max-w-lg mx-auto">
@@ -63,7 +92,7 @@ const Explore = () => {
           <div className="text-center py-12">
             <p className="text-4xl mb-4">🔍</p>
             <h3 className="font-display text-lg font-semibold mb-2">No locations found</h3>
-            <p className="text-muted-foreground text-sm">Try adjusting your filters</p>
+            <p className="text-muted-foreground text-sm">Try adjusting your filters or selecting a different state</p>
           </div>
         ) : filters.category !== 'all' ? (
           // Show flat grid when filtering by category

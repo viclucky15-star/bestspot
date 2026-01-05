@@ -1,11 +1,14 @@
 import { useWeather } from '@/hooks/useWeather';
+import { useStateSelection } from '@/hooks/useStateSelection';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { Wind, Droplets, Thermometer } from 'lucide-react';
-import { WeatherCondition } from '@/types';
+import { Wind, Droplets, Thermometer, MapPin } from 'lucide-react';
+import { WeatherCondition, NigerianState } from '@/types';
 
-// Realistic weather icon components with animations
+interface WeatherWidgetProps {
+  state?: NigerianState;
+}
 const SunIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 100 100" className={cn("drop-shadow-lg", className)}>
     {/* Sun rays */}
@@ -182,8 +185,10 @@ const WeatherIcon = ({ condition, size = 'large' }: { condition: WeatherConditio
   }
 };
 
-export function WeatherWidget() {
-  const { weather, loading, getWeatherSuggestion, today } = useWeather();
+export function WeatherWidget({ state }: WeatherWidgetProps = {}) {
+  const { selectedState } = useStateSelection();
+  const activeState = state || selectedState || 'Enugu';
+  const { weather, loading, getWeatherSuggestion, today, currentCity } = useWeather(activeState);
 
   if (loading) {
     return (
@@ -226,7 +231,13 @@ export function WeatherWidget() {
                 Live Weather
               </span>
             </div>
-            <h3 className="font-display text-xl font-bold text-foreground">Enugu</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="font-display text-xl font-bold text-foreground">{currentCity}</h3>
+              <span className="text-sm text-muted-foreground flex items-center gap-1">
+                <MapPin className="w-3 h-3" />
+                {activeState}
+              </span>
+            </div>
           </div>
           <div className="flex items-center justify-center">
             <WeatherIcon condition={today.condition} size="large" />

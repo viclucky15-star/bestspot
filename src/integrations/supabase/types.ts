@@ -62,6 +62,7 @@ export type Database = {
           image_urls: string[] | null
           likes_count: number | null
           location_id: string | null
+          state: string | null
           updated_at: string
           user_id: string
         }
@@ -73,6 +74,7 @@ export type Database = {
           image_urls?: string[] | null
           likes_count?: number | null
           location_id?: string | null
+          state?: string | null
           updated_at?: string
           user_id: string
         }
@@ -84,6 +86,7 @@ export type Database = {
           image_urls?: string[] | null
           likes_count?: number | null
           location_id?: string | null
+          state?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -234,6 +237,7 @@ export type Database = {
           longitude: number | null
           name: string
           rating: number | null
+          state: string
           total_reviews: number | null
         }
         Insert: {
@@ -254,6 +258,7 @@ export type Database = {
           longitude?: number | null
           name: string
           rating?: number | null
+          state?: string
           total_reviews?: number | null
         }
         Update: {
@@ -274,6 +279,7 @@ export type Database = {
           longitude?: number | null
           name?: string
           rating?: number | null
+          state?: string
           total_reviews?: number | null
         }
         Relationships: []
@@ -354,6 +360,7 @@ export type Database = {
           location_id: string | null
           notes: string | null
           schedule: Json | null
+          state: string | null
           status: string | null
           title: string
           updated_at: string
@@ -369,6 +376,7 @@ export type Database = {
           location_id?: string | null
           notes?: string | null
           schedule?: Json | null
+          state?: string | null
           status?: string | null
           title: string
           updated_at?: string
@@ -384,6 +392,7 @@ export type Database = {
           location_id?: string | null
           notes?: string | null
           schedule?: Json | null
+          state?: string | null
           status?: string | null
           title?: string
           updated_at?: string
