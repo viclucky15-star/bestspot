@@ -1,6 +1,7 @@
-import { Heart, MapPin } from 'lucide-react';
+import { Heart, MapPin, Navigation, ExternalLink } from 'lucide-react';
 import { Location, Category, BudgetLevel } from '@/types';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface LocationCardCompactProps {
@@ -26,6 +27,18 @@ const budgetConfig: Record<BudgetLevel, { label: string; className: string }> = 
 export function LocationCardCompact({ location, isFavorite, onToggleFavorite, onClick }: LocationCardCompactProps) {
   const categoryStyle = categoryConfig[location.category];
   const budgetStyle = budgetConfig[location.budget_level];
+
+  const openGoogleMaps = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const query = encodeURIComponent(`${location.name} Enugu Nigeria`);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+  };
+
+  const getDirections = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const query = encodeURIComponent(`${location.name} Enugu Nigeria`);
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${query}`, '_blank');
+  };
 
   return (
     <div 
@@ -79,10 +92,32 @@ export function LocationCardCompact({ location, isFavorite, onToggleFavorite, on
       {/* Content */}
       <div className="p-3">
         <h3 className="font-semibold text-sm leading-tight line-clamp-1 mb-1">{location.name}</h3>
-        <p className="text-xs text-muted-foreground flex items-center gap-1">
+        <p className="text-xs text-muted-foreground flex items-center gap-1 mb-2">
           <MapPin className="w-3 h-3 flex-shrink-0" />
           <span className="line-clamp-1">{location.area}</span>
         </p>
+        
+        {/* Map buttons */}
+        <div className="flex gap-1.5">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex-1 h-7 text-xs px-2"
+            onClick={openGoogleMaps}
+          >
+            <ExternalLink className="w-3 h-3 mr-1" />
+            Map
+          </Button>
+          <Button 
+            variant="default" 
+            size="sm" 
+            className="flex-1 h-7 text-xs px-2"
+            onClick={getDirections}
+          >
+            <Navigation className="w-3 h-3 mr-1" />
+            Go
+          </Button>
+        </div>
       </div>
     </div>
   );

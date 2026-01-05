@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Plus, MapPin, Clock } from 'lucide-react';
+import { Calendar, Plus, MapPin, Clock, Navigation, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 import { usePlannedEvents } from '@/hooks/usePlannedEvents';
+import { CreatePlanDialog } from '@/components/CreatePlanDialog';
 import { format } from 'date-fns';
 
 const Planner = () => {
@@ -32,9 +33,11 @@ const Planner = () => {
       <div className="px-4 py-6 max-w-lg mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="font-display text-2xl font-bold">My Plans</h1>
-          <Button size="sm" className="gap-2">
-            <Plus className="w-4 h-4" /> New Plan
-          </Button>
+          <CreatePlanDialog>
+            <Button size="sm" className="gap-2">
+              <Plus className="w-4 h-4" /> New Plan
+            </Button>
+          </CreatePlanDialog>
         </div>
 
         {loading ? (
@@ -54,27 +57,53 @@ const Planner = () => {
               <div>
                 <h2 className="font-semibold text-lg mb-3">Upcoming</h2>
                 <div className="space-y-3">
-                  {upcomingEvents.map((event) => (
-                    <Card key={event.id} className="overflow-hidden">
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h3 className="font-semibold">{event.title}</h3>
-                            {event.location && (
+                  {upcomingEvents.map((event) => {
+                    const openMaps = () => {
+                      if (event.location) {
+                        const query = encodeURIComponent(`${event.location.name} Enugu Nigeria`);
+                        window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+                      }
+                    };
+                    const getDirections = () => {
+                      if (event.location) {
+                        const query = encodeURIComponent(`${event.location.name} Enugu Nigeria`);
+                        window.open(`https://www.google.com/maps/dir/?api=1&destination=${query}`, '_blank');
+                      }
+                    };
+                    
+                    return (
+                      <Card key={event.id} className="overflow-hidden">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex-1">
+                              <h3 className="font-semibold">{event.title}</h3>
+                              {event.location && (
+                                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                                  <MapPin className="w-3 h-3" /> {event.location.name}
+                                </p>
+                              )}
                               <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                                <MapPin className="w-3 h-3" /> {event.location.name}
+                                <Clock className="w-3 h-3" /> {format(new Date(event.event_date), 'MMM d, yyyy')}
+                                {event.event_time && ` at ${event.event_time}`}
                               </p>
-                            )}
-                            <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                              <Clock className="w-3 h-3" /> {format(new Date(event.event_date), 'MMM d, yyyy')}
-                              {event.event_time && ` at ${event.event_time}`}
-                            </p>
+                            </div>
+                            <Badge variant="secondary">Upcoming</Badge>
                           </div>
-                          <Badge variant="secondary">Upcoming</Badge>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                          
+                          {event.location && (
+                            <div className="flex gap-2 mt-3">
+                              <Button variant="outline" size="sm" className="flex-1" onClick={openMaps}>
+                                <ExternalLink className="w-3 h-3 mr-1" /> Map
+                              </Button>
+                              <Button size="sm" className="flex-1" onClick={getDirections}>
+                                <Navigation className="w-3 h-3 mr-1" /> Go
+                              </Button>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               </div>
             )}
