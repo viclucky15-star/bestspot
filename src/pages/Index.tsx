@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Heart, MapPin, Calendar, Users, Sparkles } from 'lucide-react';
+import { Heart, MapPin, Calendar, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useFeaturedLocations } from '@/hooks/useLocations';
@@ -9,6 +9,7 @@ import { WeatherWidget } from '@/components/WeatherWidget';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { NotificationBell } from '@/components/NotificationBell';
 import heroImage from '@/assets/hero-picnic.jpg';
+import bestspotLogo from '@/assets/bestspot-logo.png';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -31,7 +32,11 @@ const Index = () => {
         </div>
 
         <div className="relative px-4 pt-12 pb-16">
-          {/* Top bar with theme toggle, notifications, and auth */}
+          {/* Top bar with logo, theme toggle, notifications, and auth */}
+          <div className="absolute top-4 left-4 flex items-center gap-2">
+            <img src={bestspotLogo} alt="BestSpot" className="w-10 h-10" />
+            <span className="font-display font-bold text-foreground drop-shadow-lg">BestSpot</span>
+          </div>
           <div className="absolute top-4 right-4 flex items-center gap-2">
             <ThemeToggle />
             <NotificationBell />
@@ -48,7 +53,7 @@ const Index = () => {
           
           <div className="max-w-lg mx-auto text-center pt-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-background/80 backdrop-blur-sm rounded-full mb-4 shadow-lg">
-              <Sparkles className="w-4 h-4 text-primary" />
+              <img src={bestspotLogo} alt="" className="w-5 h-5" />
               <span className="text-sm font-medium text-foreground">BestSpot</span>
             </div>
             
