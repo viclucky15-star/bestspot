@@ -52,7 +52,7 @@ const Index = () => {
             
             
             <h1 className="font-display text-3xl md:text-4xl font-bold mb-3 drop-shadow-lg text-success-foreground">
-              Discover Your <span className="text-gradient bg-primary-foreground">Perfect Spot</span>
+              Discover Your <span className="text-gradient bg-primary-foreground text-white">Perfect Spot</span>
             </h1>
             
             <p className="text-foreground/90 mb-6 drop-shadow-md">
