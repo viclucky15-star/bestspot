@@ -181,6 +181,8 @@ export function LocationCard({ location, isFavorite, onToggleFavorite, onClick, 
             title={location.name}
             text={`Check out ${location.name} in ${location.area}, ${location.state || 'Enugu'}! ${location.description || ''}`}
             url={`${window.location.origin}/location/${location.id}`}
+            size="sm"
+            variant="outline"
           />
         </div>
       </div>

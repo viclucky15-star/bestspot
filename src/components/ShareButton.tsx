@@ -72,32 +72,39 @@ export function ShareButton({ title, text, url, className, variant = 'outline', 
     }
   };
 
-  const nativeShare = async () => {
+  const handleShare = async () => {
+    // Try native share first on supported devices
     if (navigator.share) {
       try {
         await navigator.share({ title, text, url: shareUrl });
+        return true;
       } catch (err) {
-        if ((err as Error).name !== 'AbortError') {
-          toast.error('Failed to share');
+        // User cancelled or share failed - fallback to dropdown
+        if ((err as Error).name === 'AbortError') {
+          return true; // User cancelled, don't show dropdown
         }
+        // Other errors - let dropdown handle it
+        return false;
       }
     }
+    return false;
   };
-
-  // Use native share on mobile if available
-  if (navigator.share) {
-    return (
-      <Button variant={variant} size={size} className={className} onClick={nativeShare}>
-        <Share2 className={isIconOnly ? "w-5 h-5" : "w-4 h-4 mr-1"} />
-        {!isIconOnly && 'Share'}
-      </Button>
-    );
-  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={variant} size={size} className={className}>
+        <Button 
+          variant={variant} 
+          size={size} 
+          className={className}
+          onClick={async (e) => {
+            // Try native share first
+            const shared = await handleShare();
+            if (shared) {
+              e.preventDefault();
+            }
+          }}
+        >
           <Share2 className={isIconOnly ? "w-5 h-5" : "w-4 h-4 mr-1"} />
           {!isIconOnly && 'Share'}
         </Button>
