@@ -1,33 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { WeatherData, WeatherCondition, NigerianState } from '@/types';
+import { supabase } from '@/integrations/supabase/client';
 
-// State coordinates
+// State coordinates for fallback
 const STATE_COORDS: Record<NigerianState, { lat: number; lon: number; city: string }> = {
   Abia: { lat: 5.5320, lon: 7.4860, city: 'Umuahia' },
   Anambra: { lat: 6.2100, lon: 7.0700, city: 'Awka' },
   Enugu: { lat: 6.4584, lon: 7.5464, city: 'Enugu' },
   Ebonyi: { lat: 6.3249, lon: 8.1137, city: 'Abakaliki' },
   Imo: { lat: 5.4836, lon: 7.0333, city: 'Owerri' },
-};
-
-const getWeatherCondition = (code: number): WeatherCondition => {
-  if (code === 0 || code === 1) return 'sunny';
-  if (code === 2) return 'partly_cloudy';
-  if (code === 3) return 'cloudy';
-  if (code >= 51 && code <= 67) return 'rainy';
-  if (code >= 80 && code <= 99) return 'stormy';
-  return 'cloudy';
-};
-
-const getWeatherDescription = (condition: WeatherCondition): string => {
-  switch (condition) {
-    case 'sunny': return 'Clear skies';
-    case 'partly_cloudy': return 'Partly cloudy';
-    case 'cloudy': return 'Overcast';
-    case 'rainy': return 'Light rain';
-    case 'stormy': return 'Thunderstorms';
-    default: return 'Unknown';
-  }
 };
 
 const getWeatherIcon = (condition: WeatherCondition): string => {
@@ -37,8 +18,20 @@ const getWeatherIcon = (condition: WeatherCondition): string => {
     case 'cloudy': return '☁️';
     case 'rainy': return '🌧️';
     case 'stormy': return '⛈️';
+    case 'windy': return '💨';
     default: return '🌤️';
   }
+};
+
+const mapCondition = (condition: string): WeatherCondition => {
+  const conditionMap: Record<string, WeatherCondition> = {
+    sunny: 'sunny',
+    cloudy: 'cloudy',
+    rainy: 'rainy',
+    windy: 'cloudy',
+    stormy: 'stormy',
+  };
+  return conditionMap[condition] || 'cloudy';
 };
 
 export function useWeather(state: NigerianState = 'Enugu') {
@@ -48,36 +41,53 @@ export function useWeather(state: NigerianState = 'Enugu') {
   const [currentCity, setCurrentCity] = useState(STATE_COORDS[state].city);
 
   const fetchWeather = useCallback(async () => {
-    const coords = STATE_COORDS[state];
-    setCurrentCity(coords.city);
+    setLoading(true);
+    setCurrentCity(STATE_COORDS[state].city);
     
     try {
-      const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,windspeed_10m_max&timezone=Africa/Lagos`
-      );
-
-      if (!response.ok) throw new Error('Failed to fetch weather');
-
-      const data = await response.json();
-
-      const weatherData: WeatherData[] = data.daily.time.slice(0, 5).map((date: string, index: number) => {
-        const code = data.daily.weathercode[index];
-        const condition = getWeatherCondition(code);
-        
-        return {
-          date,
-          temperature: Math.round((data.daily.temperature_2m_max[index] + data.daily.temperature_2m_min[index]) / 2),
-          condition,
-          description: getWeatherDescription(condition),
-          humidity: data.daily.relative_humidity_2m_max[index],
-          windSpeed: Math.round(data.daily.windspeed_10m_max[index]),
-          icon: getWeatherIcon(condition),
-        };
+      // Try AccuWeather via edge function
+      const { data, error: fnError } = await supabase.functions.invoke('get-weather', {
+        body: { state }
       });
 
-      setWeather(weatherData);
-      setError(null);
+      if (fnError) throw fnError;
+
+      if (data && data.current) {
+        const condition = mapCondition(data.current.condition);
+        
+        // Current weather as first item
+        const currentWeather: WeatherData = {
+          date: new Date().toISOString().split('T')[0],
+          temperature: data.current.temperature,
+          condition,
+          description: data.current.description,
+          humidity: data.current.humidity,
+          windSpeed: data.current.windSpeed,
+          icon: getWeatherIcon(condition),
+        };
+
+        // Map forecast data
+        const forecastWeather: WeatherData[] = data.forecast?.slice(1, 5).map((day: any) => {
+          const dayCondition = mapCondition(day.condition);
+          return {
+            date: day.date.split('T')[0],
+            temperature: Math.round((day.high + day.low) / 2),
+            condition: dayCondition,
+            description: day.description,
+            humidity: data.current.humidity,
+            windSpeed: data.current.windSpeed,
+            icon: getWeatherIcon(dayCondition),
+          };
+        }) || [];
+
+        setWeather([currentWeather, ...forecastWeather]);
+        setCurrentCity(data.location || STATE_COORDS[state].city);
+        setError(null);
+      } else {
+        throw new Error('Invalid weather data');
+      }
     } catch (err) {
+      console.error('Weather fetch error:', err);
       setError(err as Error);
       // Fallback weather data
       setWeather([
@@ -95,8 +105,8 @@ export function useWeather(state: NigerianState = 'Enugu') {
   useEffect(() => {
     fetchWeather();
     
-    // Auto-refresh every 15 minutes for more up-to-date data
-    const interval = setInterval(fetchWeather, 15 * 60 * 1000);
+    // Auto-refresh every 30 minutes (AccuWeather has rate limits)
+    const interval = setInterval(fetchWeather, 30 * 60 * 1000);
     
     // Refresh when window regains focus
     const handleFocus = () => fetchWeather();
@@ -139,5 +149,5 @@ export function useWeather(state: NigerianState = 'Enugu') {
     }
   };
 
-  return { weather, loading, error, getWeatherSuggestion, today: weather[0], currentCity, state };
+  return { weather, loading, error, getWeatherSuggestion, today: weather[0], currentCity, state, refetch: fetchWeather };
 }
