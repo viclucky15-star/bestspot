@@ -21,6 +21,7 @@ interface ShareButtonProps {
 export function ShareButton({ title, text, url, className, variant = 'outline', size = 'sm' }: ShareButtonProps) {
   const shareUrl = url || window.location.href;
   const fullText = `${title}\n\n${text}`;
+  const isIconOnly = size === 'icon';
 
   const shareToWhatsApp = () => {
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${fullText}\n\n${shareUrl}`)}`;
@@ -59,7 +60,7 @@ export function ShareButton({ title, text, url, className, variant = 'outline', 
 
   const shareViaEmail = () => {
     const emailUrl = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`${text}\n\n${shareUrl}`)}`;
-    window.open(emailUrl, '_blank');
+    window.location.href = emailUrl;
   };
 
   const copyLink = async () => {
@@ -87,8 +88,8 @@ export function ShareButton({ title, text, url, className, variant = 'outline', 
   if (navigator.share) {
     return (
       <Button variant={variant} size={size} className={className} onClick={nativeShare}>
-        <Share2 className="w-4 h-4 mr-1" />
-        Share
+        <Share2 className={isIconOnly ? "w-5 h-5" : "w-4 h-4 mr-1"} />
+        {!isIconOnly && 'Share'}
       </Button>
     );
   }
@@ -97,8 +98,8 @@ export function ShareButton({ title, text, url, className, variant = 'outline', 
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant={variant} size={size} className={className}>
-          <Share2 className="w-4 h-4 mr-1" />
-          Share
+          <Share2 className={isIconOnly ? "w-5 h-5" : "w-4 h-4 mr-1"} />
+          {!isIconOnly && 'Share'}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
