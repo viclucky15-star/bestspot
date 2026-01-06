@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Heart, MapPin, Clock, Wallet, Star, Share2, Calendar, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Heart, MapPin, Clock, Wallet, Star, Calendar, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
@@ -8,6 +8,7 @@ import { useFavorites } from '@/hooks/useFavorites';
 import { supabase } from '@/integrations/supabase/client';
 import { Location } from '@/types';
 import { useToast } from '@/hooks/use-toast';
+import { ShareButton } from '@/components/ShareButton';
 
 const LocationDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -39,18 +40,6 @@ const LocationDetail = () => {
     setLoading(false);
   };
 
-  const handleShare = () => {
-    if (navigator.share && location) {
-      navigator.share({
-        title: location.name,
-        text: location.description || `Check out ${location.name} in Enugu!`,
-        url: window.location.href,
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast({ title: 'Link copied!' });
-    }
-  };
 
   const getBudgetLabel = (level: string) => {
     const labels: Record<string, string> = { low: '₦ Budget-Friendly', medium: '₦₦ Moderate', high: '₦₦₦ Premium' };
@@ -96,9 +85,14 @@ const LocationDetail = () => {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div className="flex gap-2">
-            <Button variant="secondary" size="icon" onClick={handleShare} className="bg-background/80 backdrop-blur">
-              <Share2 className="w-5 h-5" />
-            </Button>
+            <ShareButton
+              title={location.name}
+              text={location.description || `Check out ${location.name}!`}
+              url={window.location.href}
+              variant="secondary"
+              size="icon"
+              className="bg-background/80 backdrop-blur"
+            />
             <Button
               variant="secondary"
               size="icon"

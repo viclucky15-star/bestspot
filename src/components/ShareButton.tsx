@@ -5,6 +5,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 
@@ -39,6 +40,26 @@ export function ShareButton({ title, text, url, className, variant = 'outline', 
   const shareToTelegram = () => {
     const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(fullText)}`;
     window.open(telegramUrl, '_blank');
+  };
+
+  const shareToLinkedIn = () => {
+    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+    window.open(linkedInUrl, '_blank');
+  };
+
+  const shareToPinterest = () => {
+    const pinterestUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&description=${encodeURIComponent(fullText)}`;
+    window.open(pinterestUrl, '_blank');
+  };
+
+  const shareToReddit = () => {
+    const redditUrl = `https://reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(title)}`;
+    window.open(redditUrl, '_blank');
+  };
+
+  const shareViaEmail = () => {
+    const emailUrl = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`${text}\n\n${shareUrl}`)}`;
+    window.open(emailUrl, '_blank');
   };
 
   const copyLink = async () => {
@@ -92,6 +113,20 @@ export function ShareButton({ title, text, url, className, variant = 'outline', 
         </DropdownMenuItem>
         <DropdownMenuItem onClick={shareToTelegram} className="cursor-pointer gap-2">
           <span className="text-lg">✈️</span> Telegram
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={shareToLinkedIn} className="cursor-pointer gap-2">
+          <span className="text-lg">💼</span> LinkedIn
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={shareToPinterest} className="cursor-pointer gap-2">
+          <span className="text-lg">📌</span> Pinterest
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={shareToReddit} className="cursor-pointer gap-2">
+          <span className="text-lg">🔶</span> Reddit
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={shareViaEmail} className="cursor-pointer gap-2">
+          <span className="text-lg">📧</span> Email
         </DropdownMenuItem>
         <DropdownMenuItem onClick={copyLink} className="cursor-pointer gap-2">
           <span className="text-lg">🔗</span> Copy Link
