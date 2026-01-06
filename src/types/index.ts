@@ -131,7 +131,7 @@ export interface WeatherData {
   icon: string;
 }
 
-export type WeatherCondition = 'sunny' | 'cloudy' | 'rainy' | 'partly_cloudy' | 'stormy';
+export type WeatherCondition = 'sunny' | 'cloudy' | 'rainy' | 'partly_cloudy' | 'stormy' | 'windy';
 
 export interface FilterOptions {
   category?: Category | 'all';
