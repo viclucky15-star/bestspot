@@ -255,7 +255,7 @@ export const VoiceAssistant = () => {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-4 z-50 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 overflow-hidden"
+        className="fixed bottom-24 right-4 z-50 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 overflow-hidden animate-pulse"
         aria-label="Open voice assistant"
       >
         <img src={aiAssistantIcon} alt="Date Assistant" className="w-14 h-14 object-cover" />
