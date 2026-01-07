@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Calendar, Users, Map } from 'lucide-react';
+import { MapPin, Calendar, Users, Map, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useFeaturedLocations } from '@/hooks/useLocations';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useStateSelection, STATES } from '@/hooks/useStateSelection';
+import { useUserRole } from '@/hooks/useUserRole';
 import { LocationCard } from '@/components/LocationCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
 import { MainMenu } from '@/components/MainMenu';
@@ -17,6 +18,7 @@ const Index = () => {
   const { selectedState, stateInfo } = useStateSelection();
   const { locations: featured, loading } = useFeaturedLocations(selectedState);
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { isBusiness } = useUserRole();
 
   return (
     <div className="min-h-screen bg-background">
@@ -61,6 +63,19 @@ const Index = () => {
                 <MapPin className="w-4 h-4" /> Explore Places
               </Button>
             </div>
+
+            {/* Business Dashboard Button - Only visible to business owners */}
+            {isBusiness && (
+              <div className="mt-4">
+                <Button 
+                  onClick={() => navigate('/business/dashboard')} 
+                  variant="secondary" 
+                  className="gap-2 shadow-lg"
+                >
+                  <Building2 className="w-4 h-4" /> Dashboard Panel
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
