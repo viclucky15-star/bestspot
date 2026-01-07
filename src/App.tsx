@@ -18,6 +18,10 @@ import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
 import Community from "./pages/Community";
 import LocationDetail from "./pages/LocationDetail";
+import BusinessDashboard from "./pages/BusinessDashboard";
+import BusinessOnboarding from "./pages/BusinessOnboarding";
+import BusinessAnalytics from "./pages/BusinessAnalytics";
+import BusinessPromotions from "./pages/BusinessPromotions";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +53,10 @@ const App = () => (
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/community" element={<Community />} />
                   <Route path="/location/:id" element={<LocationDetail />} />
+                  <Route path="/business" element={<BusinessDashboard />} />
+                  <Route path="/business/onboarding" element={<BusinessOnboarding />} />
+                  <Route path="/business/analytics" element={<BusinessAnalytics />} />
+                  <Route path="/business/promotions" element={<BusinessPromotions />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <BottomNavigation />

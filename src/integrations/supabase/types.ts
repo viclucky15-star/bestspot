@@ -14,6 +14,146 @@ export type Database = {
   }
   public: {
     Tables: {
+      business_accounts: {
+        Row: {
+          business_email: string
+          business_name: string
+          business_type: string | null
+          created_at: string | null
+          id: string
+          phone_number: string | null
+          subscription_expires_at: string | null
+          subscription_tier: string | null
+          updated_at: string | null
+          user_id: string
+          verification_status: string | null
+        }
+        Insert: {
+          business_email: string
+          business_name: string
+          business_type?: string | null
+          created_at?: string | null
+          id?: string
+          phone_number?: string | null
+          subscription_expires_at?: string | null
+          subscription_tier?: string | null
+          updated_at?: string | null
+          user_id: string
+          verification_status?: string | null
+        }
+        Update: {
+          business_email?: string
+          business_name?: string
+          business_type?: string | null
+          created_at?: string | null
+          id?: string
+          phone_number?: string | null
+          subscription_expires_at?: string | null
+          subscription_tier?: string | null
+          updated_at?: string | null
+          user_id?: string
+          verification_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_accounts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_analytics: {
+        Row: {
+          business_id: string
+          clicks_to_maps: number | null
+          created_at: string | null
+          date: string
+          favorites: number | null
+          id: string
+          location_id: string
+          planned_visits: number | null
+          views: number | null
+        }
+        Insert: {
+          business_id: string
+          clicks_to_maps?: number | null
+          created_at?: string | null
+          date: string
+          favorites?: number | null
+          id?: string
+          location_id: string
+          planned_visits?: number | null
+          views?: number | null
+        }
+        Update: {
+          business_id?: string
+          clicks_to_maps?: number | null
+          created_at?: string | null
+          date?: string
+          favorites?: number | null
+          id?: string
+          location_id?: string
+          planned_visits?: number | null
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_analytics_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "business_analytics_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_locations: {
+        Row: {
+          business_id: string
+          created_at: string | null
+          id: string
+          is_owner: boolean | null
+          location_id: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string | null
+          id?: string
+          is_owner?: boolean | null
+          location_id: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string | null
+          id?: string
+          is_owner?: boolean | null
+          location_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_locations_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "business_locations_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           content: string
@@ -182,6 +322,63 @@ export type Database = {
           },
         ]
       }
+      featured_listings: {
+        Row: {
+          amount_paid: number | null
+          business_id: string
+          clicks: number | null
+          created_at: string | null
+          end_date: string
+          id: string
+          impressions: number | null
+          location_id: string
+          payment_status: string | null
+          start_date: string
+          tier: string | null
+        }
+        Insert: {
+          amount_paid?: number | null
+          business_id: string
+          clicks?: number | null
+          created_at?: string | null
+          end_date: string
+          id?: string
+          impressions?: number | null
+          location_id: string
+          payment_status?: string | null
+          start_date: string
+          tier?: string | null
+        }
+        Update: {
+          amount_paid?: number | null
+          business_id?: string
+          clicks?: number | null
+          created_at?: string | null
+          end_date?: string
+          id?: string
+          impressions?: number | null
+          location_id?: string
+          payment_status?: string | null
+          start_date?: string
+          tier?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "featured_listings_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "business_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "featured_listings_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       likes: {
         Row: {
           created_at: string
@@ -232,10 +429,12 @@ export type Database = {
           google_maps_url: string | null
           id: string
           image_url: string | null
+          is_claimed: boolean | null
           is_featured: boolean | null
           latitude: number | null
           longitude: number | null
           name: string
+          owner_business_id: string | null
           rating: number | null
           state: string
           total_reviews: number | null
@@ -253,10 +452,12 @@ export type Database = {
           google_maps_url?: string | null
           id?: string
           image_url?: string | null
+          is_claimed?: boolean | null
           is_featured?: boolean | null
           latitude?: number | null
           longitude?: number | null
           name: string
+          owner_business_id?: string | null
           rating?: number | null
           state?: string
           total_reviews?: number | null
@@ -274,15 +475,25 @@ export type Database = {
           google_maps_url?: string | null
           id?: string
           image_url?: string | null
+          is_claimed?: boolean | null
           is_featured?: boolean | null
           latitude?: number | null
           longitude?: number | null
           name?: string
+          owner_business_id?: string | null
           rating?: number | null
           state?: string
           total_reviews?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "locations_owner_business_id_fkey"
+            columns: ["owner_business_id"]
+            isOneToOne: false
+            referencedRelation: "business_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       messages: {
         Row: {
