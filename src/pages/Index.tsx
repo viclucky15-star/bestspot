@@ -118,9 +118,9 @@ const Index = () => {
             <Button variant="ghost" size="sm" onClick={() => navigate('/explore')}>See all</Button>
           </div>
           
-          {loading ? (
-            <div className="grid gap-4">
-              {[1, 2].map(i => <div key={i} className="h-64 bg-muted rounded-xl animate-pulse" />)}
+        {loading ? (
+            <div className="grid grid-cols-2 gap-3">
+              {[1, 2, 3, 4].map(i => <div key={i} className="h-48 bg-muted rounded-xl animate-pulse" />)}
             </div>
           ) : featured.length === 0 ? (
             <div className="text-center py-8 bg-muted/50 rounded-xl">
@@ -128,14 +128,15 @@ const Index = () => {
               <Button variant="link" onClick={() => navigate('/explore')}>Explore all locations</Button>
             </div>
           ) : (
-            <div className="grid gap-4">
-              {featured.slice(0, 4).map(location => (
+            <div className="grid grid-cols-2 gap-3">
+              {featured.slice(0, 6).map(location => (
                 <LocationCard 
                   key={location.id} 
                   location={location} 
                   isFavorite={isFavorite(location.id)} 
                   onToggleFavorite={() => toggleFavorite(location.id)} 
                   onClick={() => navigate(`/location/${location.id}`)} 
+                  compact
                 />
               ))}
             </div>
