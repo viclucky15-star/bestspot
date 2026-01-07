@@ -16,6 +16,14 @@ export interface BusinessAccount {
   subscription_expires_at: string | null;
   created_at: string;
   updated_at: string;
+  owner_full_name?: string | null;
+  bank_name?: string | null;
+  bank_account_number?: string | null;
+  bank_account_name?: string | null;
+  bank_verified?: boolean;
+  wallet_balance?: number;
+  total_earnings?: number;
+  documents_submitted?: boolean;
 }
 
 export interface BusinessLocation {

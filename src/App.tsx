@@ -22,6 +22,10 @@ import BusinessDashboard from "./pages/BusinessDashboard";
 import BusinessOnboarding from "./pages/BusinessOnboarding";
 import BusinessAnalytics from "./pages/BusinessAnalytics";
 import BusinessPromotions from "./pages/BusinessPromotions";
+import BusinessBookings from "./pages/BusinessBookings";
+import BusinessWallet from "./pages/BusinessWallet";
+import BusinessReviews from "./pages/BusinessReviews";
+import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,6 +61,10 @@ const App = () => (
                   <Route path="/business/onboarding" element={<BusinessOnboarding />} />
                   <Route path="/business/analytics" element={<BusinessAnalytics />} />
                   <Route path="/business/promotions" element={<BusinessPromotions />} />
+                  <Route path="/business/bookings" element={<BusinessBookings />} />
+                  <Route path="/business/wallet" element={<BusinessWallet />} />
+                  <Route path="/business/reviews" element={<BusinessReviews />} />
+                  <Route path="/admin" element={<AdminPanel />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <BottomNavigation />
