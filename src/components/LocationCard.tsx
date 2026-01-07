@@ -45,26 +45,26 @@ export function LocationCard({ location, isFavorite, onToggleFavorite, onClick, 
   if (compact) {
     return (
       <div 
-        className="flex items-center gap-3 p-3 bg-card rounded-lg border cursor-pointer hover:shadow-md transition-shadow"
+        className="flex flex-col bg-card rounded-xl border cursor-pointer hover:shadow-md transition-shadow overflow-hidden"
         onClick={onClick}
       >
-        <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+        <div className="aspect-[4/3] overflow-hidden">
           <img 
             src={location.image_url || '/placeholder.svg'} 
             alt={location.name}
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="flex-1 min-w-0">
-          <h4 className="font-medium text-sm truncate">{location.name}</h4>
-          <p className="text-xs text-muted-foreground flex items-center gap-1">
-            <MapPin className="w-3 h-3" />
-            {location.area}
+        <div className="p-2.5">
+          <h4 className="font-medium text-sm line-clamp-1 mb-1">{location.name}</h4>
+          <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1.5">
+            <MapPin className="w-3 h-3 flex-shrink-0" />
+            <span className="truncate">{location.area}</span>
           </p>
+          <Badge className={cn("text-[10px] px-1.5 py-0.5", categoryStyle.className)}>
+            {categoryStyle.label}
+          </Badge>
         </div>
-        <Badge className={cn("text-xs", categoryStyle.className)}>
-          {categoryStyle.label}
-        </Badge>
       </div>
     );
   }
