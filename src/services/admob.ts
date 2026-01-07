@@ -1,4 +1,3 @@
-import { AdMob, BannerAdOptions, BannerAdSize, BannerAdPosition, AdOptions, RewardAdOptions } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
 
 // Test Ad Unit IDs - Replace with your real AdMob Ad Unit IDs in production
@@ -20,12 +19,24 @@ const PROD_REWARDED_IOS = 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX';
 // Set to false in production
 const USE_TEST_ADS = true;
 
-export const isNativePlatform = () => {
-  return Capacitor.isNativePlatform();
+export const isNativePlatform = (): boolean => {
+  try {
+    return Capacitor.isNativePlatform();
+  } catch {
+    return false;
+  }
+};
+
+const getPlatform = (): string => {
+  try {
+    return Capacitor.getPlatform();
+  } catch {
+    return 'web';
+  }
 };
 
 export const getAdUnitId = (type: 'banner' | 'interstitial' | 'rewarded'): string => {
-  const isAndroid = Capacitor.getPlatform() === 'android';
+  const isAndroid = getPlatform() === 'android';
   
   if (USE_TEST_ADS) {
     switch (type) {
@@ -48,11 +59,21 @@ export const getAdUnitId = (type: 'banner' | 'interstitial' | 'rewarded'): strin
   }
 };
 
-export const initializeAdMob = async (): Promise<void> => {
-  if (!isNativePlatform()) {
-    console.log('AdMob: Running on web, skipping initialization');
-    return;
+// Dynamically import AdMob only on native platforms
+const getAdMob = async () => {
+  if (!isNativePlatform()) return null;
+  try {
+    const { AdMob } = await import('@capacitor-community/admob');
+    return AdMob;
+  } catch {
+    console.log('AdMob not available');
+    return null;
   }
+};
+
+export const initializeAdMob = async (): Promise<void> => {
+  const AdMob = await getAdMob();
+  if (!AdMob) return;
 
   try {
     await AdMob.initialize({
@@ -66,18 +87,19 @@ export const initializeAdMob = async (): Promise<void> => {
 };
 
 export const showBannerAd = async (position: 'top' | 'bottom' = 'bottom'): Promise<void> => {
-  if (!isNativePlatform()) return;
+  const AdMob = await getAdMob();
+  if (!AdMob) return;
 
   try {
-    const options: BannerAdOptions = {
+    const { BannerAdSize, BannerAdPosition } = await import('@capacitor-community/admob');
+    
+    await AdMob.showBanner({
       adId: getAdUnitId('banner'),
       adSize: BannerAdSize.ADAPTIVE_BANNER,
       position: position === 'top' ? BannerAdPosition.TOP_CENTER : BannerAdPosition.BOTTOM_CENTER,
       margin: 0,
       isTesting: USE_TEST_ADS,
-    };
-
-    await AdMob.showBanner(options);
+    });
     console.log('Banner ad shown');
   } catch (error) {
     console.error('Failed to show banner ad:', error);
@@ -85,7 +107,8 @@ export const showBannerAd = async (position: 'top' | 'bottom' = 'bottom'): Promi
 };
 
 export const hideBannerAd = async (): Promise<void> => {
-  if (!isNativePlatform()) return;
+  const AdMob = await getAdMob();
+  if (!AdMob) return;
 
   try {
     await AdMob.hideBanner();
@@ -95,15 +118,14 @@ export const hideBannerAd = async (): Promise<void> => {
 };
 
 export const prepareInterstitialAd = async (): Promise<void> => {
-  if (!isNativePlatform()) return;
+  const AdMob = await getAdMob();
+  if (!AdMob) return;
 
   try {
-    const options: AdOptions = {
+    await AdMob.prepareInterstitial({
       adId: getAdUnitId('interstitial'),
       isTesting: USE_TEST_ADS,
-    };
-
-    await AdMob.prepareInterstitial(options);
+    });
     console.log('Interstitial ad prepared');
   } catch (error) {
     console.error('Failed to prepare interstitial ad:', error);
@@ -111,7 +133,8 @@ export const prepareInterstitialAd = async (): Promise<void> => {
 };
 
 export const showInterstitialAd = async (): Promise<void> => {
-  if (!isNativePlatform()) return;
+  const AdMob = await getAdMob();
+  if (!AdMob) return;
 
   try {
     await AdMob.showInterstitial();
@@ -122,15 +145,14 @@ export const showInterstitialAd = async (): Promise<void> => {
 };
 
 export const prepareRewardedAd = async (): Promise<void> => {
-  if (!isNativePlatform()) return;
+  const AdMob = await getAdMob();
+  if (!AdMob) return;
 
   try {
-    const options: RewardAdOptions = {
+    await AdMob.prepareRewardVideoAd({
       adId: getAdUnitId('rewarded'),
       isTesting: USE_TEST_ADS,
-    };
-
-    await AdMob.prepareRewardVideoAd(options);
+    });
     console.log('Rewarded ad prepared');
   } catch (error) {
     console.error('Failed to prepare rewarded ad:', error);
@@ -138,7 +160,8 @@ export const prepareRewardedAd = async (): Promise<void> => {
 };
 
 export const showRewardedAd = async (): Promise<{ rewarded: boolean }> => {
-  if (!isNativePlatform()) return { rewarded: false };
+  const AdMob = await getAdMob();
+  if (!AdMob) return { rewarded: false };
 
   try {
     const result = await AdMob.showRewardVideoAd();
