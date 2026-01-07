@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { isNativePlatform, showBannerAd, hideBannerAd } from '@/services/admob';
 
 interface AdBannerProps {
   slot: string;
   format?: 'auto' | 'rectangle' | 'horizontal' | 'vertical';
   className?: string;
   testMode?: boolean;
+  position?: 'top' | 'bottom';
 }
 
 declare global {
@@ -14,12 +16,21 @@ declare global {
   }
 }
 
-export function AdBanner({ slot, format = 'auto', className, testMode = true }: AdBannerProps) {
+export function AdBanner({ slot, format = 'auto', className, testMode = true, position = 'bottom' }: AdBannerProps) {
   const adRef = useRef<HTMLDivElement>(null);
   const [adBlocked, setAdBlocked] = useState(false);
+  const isNative = isNativePlatform();
 
   useEffect(() => {
-    // Check if ad script loaded (ad blocker detection)
+    // If running as native app, use AdMob instead
+    if (isNative) {
+      showBannerAd(position);
+      return () => {
+        hideBannerAd();
+      };
+    }
+
+    // Web: Check if ad script loaded (ad blocker detection)
     const checkAdBlocker = () => {
       if (typeof window.adsbygoogle === 'undefined') {
         setAdBlocked(true);
@@ -35,7 +46,23 @@ export function AdBanner({ slot, format = 'auto', className, testMode = true }: 
         console.error('AdSense error:', error);
       }
     }
-  }, [testMode]);
+  }, [testMode, isNative, position]);
+
+  // Native app - AdMob handles rendering, just add spacing
+  if (isNative) {
+    return (
+      <div 
+        className={cn(
+          "w-full",
+          format === 'rectangle' && "h-[250px]",
+          format === 'horizontal' && "h-[60px]",
+          format === 'vertical' && "h-[600px]",
+          format === 'auto' && "h-[60px]",
+          className
+        )}
+      />
+    );
+  }
 
   // Test mode - show placeholder
   if (testMode) {
