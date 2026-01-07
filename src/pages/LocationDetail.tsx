@@ -9,6 +9,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Location } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { ShareButton } from '@/components/ShareButton';
+import { ClaimBusinessCTA } from '@/components/business/ClaimBusinessCTA';
+import { AdBanner } from '@/components/ads/AdBanner';
 
 const LocationDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -178,6 +180,20 @@ const LocationDetail = () => {
               <Calendar className="w-4 h-4" /> Plan a Visit
             </Button>
           </div>
+        </div>
+
+        {/* Claim Business CTA */}
+        <div className="mt-4">
+          <ClaimBusinessCTA 
+            locationId={location.id} 
+            locationName={location.name}
+            isClaimed={(location as any).is_claimed}
+          />
+        </div>
+
+        {/* Ad Banner */}
+        <div className="mt-4">
+          <AdBanner slot="location-detail-1" format="rectangle" />
         </div>
       </div>
     </div>
