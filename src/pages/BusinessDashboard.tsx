@@ -110,7 +110,31 @@ export default function BusinessDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-4 gap-2">
+          <Button 
+            variant="outline" 
+            className="flex flex-col items-center gap-2 h-auto py-4"
+            onClick={() => navigate('/business/bookings')}
+          >
+            <Calendar className="h-5 w-5" />
+            <span className="text-xs">Bookings</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            className="flex flex-col items-center gap-2 h-auto py-4"
+            onClick={() => navigate('/business/wallet')}
+          >
+            <TrendingUp className="h-5 w-5" />
+            <span className="text-xs">Wallet</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            className="flex flex-col items-center gap-2 h-auto py-4"
+            onClick={() => navigate('/business/reviews')}
+          >
+            <Star className="h-5 w-5" />
+            <span className="text-xs">Reviews</span>
+          </Button>
           <Button 
             variant="outline" 
             className="flex flex-col items-center gap-2 h-auto py-4"
@@ -119,21 +143,25 @@ export default function BusinessDashboard() {
             <BarChart3 className="h-5 w-5" />
             <span className="text-xs">Analytics</span>
           </Button>
+        </div>
+        
+        {/* Secondary Actions */}
+        <div className="grid grid-cols-2 gap-3">
           <Button 
             variant="outline" 
-            className="flex flex-col items-center gap-2 h-auto py-4"
+            className="flex items-center gap-2"
             onClick={() => navigate('/business/promotions')}
           >
-            <Megaphone className="h-5 w-5" />
-            <span className="text-xs">Promotions</span>
+            <Megaphone className="h-4 w-4" />
+            <span>Promotions</span>
           </Button>
           <Button 
             variant="outline" 
-            className="flex flex-col items-center gap-2 h-auto py-4"
+            className="flex items-center gap-2"
             onClick={() => navigate('/explore')}
           >
-            <Plus className="h-5 w-5" />
-            <span className="text-xs">Claim Location</span>
+            <Plus className="h-4 w-4" />
+            <span>Claim Location</span>
           </Button>
         </div>
 

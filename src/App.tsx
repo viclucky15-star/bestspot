@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
+import BusinessAuth from "./pages/BusinessAuth";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -57,6 +58,7 @@ const App = () => (
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/community" element={<Community />} />
                   <Route path="/location/:id" element={<LocationDetail />} />
+                  <Route path="/business/auth" element={<BusinessAuth />} />
                   <Route path="/business" element={<BusinessDashboard />} />
                   <Route path="/business/onboarding" element={<BusinessOnboarding />} />
                   <Route path="/business/analytics" element={<BusinessAnalytics />} />
