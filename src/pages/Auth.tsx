@@ -165,10 +165,21 @@ const Auth = () => {
               </Button>
             </form>
 
-            <div className="mt-6 text-center">
+            <div className="mt-6 text-center space-y-3">
               <button type="button" onClick={() => setIsLogin(!isLogin)} className="text-sm text-primary hover:underline">
                 {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
               </button>
+              
+              <div className="pt-4 border-t">
+                <p className="text-sm text-muted-foreground mb-2">Are you a business or venue owner?</p>
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={() => navigate('/business/auth')}
+                >
+                  Register as Business Owner
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
