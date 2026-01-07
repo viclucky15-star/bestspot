@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, Sun, Moon, Monitor, Clock, Share2, Users, LogOut, ChevronRight } from 'lucide-react';
+import { Menu, Sun, Moon, Monitor, Clock, Share2, Users, LogOut, ChevronRight, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/sheet';
 import { useTheme } from '@/components/ThemeProvider';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
 import { Location } from '@/types';
 
@@ -25,6 +26,7 @@ export function MainMenu() {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const { user, signOut } = useAuth();
+  const { isBusiness } = useUserRole();
   const [open, setOpen] = useState(false);
   const [recentlyViewed, setRecentlyViewed] = useState<RecentlyViewed[]>([]);
   const [loadingRecent, setLoadingRecent] = useState(false);
@@ -169,6 +171,18 @@ export function MainMenu() {
               <span className="flex-1 text-left">My Connections</span>
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </button>
+
+            {/* Business Dashboard - Only visible to business owners */}
+            {isBusiness && (
+              <button
+                onClick={() => handleNavigate('/business/dashboard')}
+                className="w-full flex items-center gap-3 p-4 hover:bg-muted transition-colors border-b"
+              >
+                <Building2 className="h-5 w-5 text-primary" />
+                <span className="flex-1 text-left font-medium">Business Dashboard</span>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </button>
+            )}
           </div>
 
           {/* Sign Out Button */}
