@@ -53,7 +53,7 @@ export function ClaimLocationDialog({
     resolver: zodResolver(claimSchema),
     defaultValues: {
       businessName: businessAccount?.business_name || '',
-      ownerFullName: businessAccount?.owner_full_name || '',
+      ownerFullName: '',
       phoneNumber: businessAccount?.phone_number || '',
     },
   });

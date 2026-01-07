@@ -24,10 +24,24 @@ import {
 } from 'lucide-react';
 import { PayoutStatus } from '@/types/business';
 
+// Extended type for business account with wallet fields
+interface ExtendedBusinessAccount {
+  id: string;
+  wallet_balance?: number;
+  total_earnings?: number;
+  bank_name?: string | null;
+  bank_account_number?: string | null;
+  bank_account_name?: string | null;
+}
+
 export default function BusinessWallet() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const { businessAccount, isLoading: accountLoading } = useBusinessAccount();
+  const { businessAccount: rawBusinessAccount, isLoading: accountLoading } = useBusinessAccount();
+  
+  // Cast to extended type to access wallet fields
+  const businessAccount = rawBusinessAccount as ExtendedBusinessAccount | null;
+  
   const { payouts, isLoading: payoutsLoading, requestPayout } = useBusinessPayouts(businessAccount?.id);
   
   const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
@@ -40,10 +54,10 @@ export default function BusinessWallet() {
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    if (!accountLoading && !businessAccount) {
+    if (!accountLoading && !rawBusinessAccount) {
       navigate('/business/onboarding');
     }
-  }, [businessAccount, accountLoading, navigate]);
+  }, [rawBusinessAccount, accountLoading, navigate]);
 
   const isLoading = authLoading || accountLoading || payoutsLoading;
 
@@ -70,9 +84,9 @@ export default function BusinessWallet() {
 
     await requestPayout.mutateAsync({
       amount,
-      bankName: businessAccount!.bank_name!,
-      accountNumber: businessAccount!.bank_account_number!,
-      accountName: businessAccount!.bank_account_name!,
+      bankName: businessAccount?.bank_name || '',
+      accountNumber: businessAccount?.bank_account_number || '',
+      accountName: businessAccount?.bank_account_name || '',
     });
 
     setShowWithdrawDialog(false);
