@@ -14,6 +14,30 @@ const stateLocations: Record<string, { city: string; lat: number; lon: number }>
   'Imo': { city: 'Owerri', lat: 5.4836, lon: 7.0333 },
 };
 
+// Fallback weather data when API is unavailable
+const getFallbackWeather = (state: string, location: { city: string }) => ({
+  location: location.city,
+  state: state,
+  current: {
+    temperature: 28,
+    condition: 'cloudy',
+    description: 'Partly Cloudy',
+    humidity: 75,
+    windSpeed: 12,
+    feelsLike: 30,
+    uvIndex: 6,
+  },
+  forecast: [
+    { date: new Date().toISOString(), high: 31, low: 23, condition: 'cloudy', description: 'Partly Cloudy' },
+    { date: new Date(Date.now() + 86400000).toISOString(), high: 30, low: 22, condition: 'rainy', description: 'Showers' },
+    { date: new Date(Date.now() + 172800000).toISOString(), high: 29, low: 22, condition: 'rainy', description: 'Thunderstorms' },
+    { date: new Date(Date.now() + 259200000).toISOString(), high: 31, low: 23, condition: 'cloudy', description: 'Mostly Cloudy' },
+    { date: new Date(Date.now() + 345600000).toISOString(), high: 32, low: 24, condition: 'sunny', description: 'Sunny' },
+  ],
+  lastUpdated: new Date().toISOString(),
+  isFallback: true,
+});
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -37,7 +61,20 @@ serve(async (req) => {
     if (!geoResponse.ok) {
       const errorText = await geoResponse.text();
       console.error('AccuWeather geo error:', errorText);
-      throw new Error('Failed to get location from AccuWeather');
+      
+      // Return fallback data instead of throwing error
+      if (geoResponse.status === 429) {
+        console.log('API quota exceeded, returning fallback weather data');
+        return new Response(JSON.stringify(getFallbackWeather(state, location)), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      // For other errors, also return fallback
+      console.log('API error, returning fallback weather data');
+      return new Response(JSON.stringify(getFallbackWeather(state, location)), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
     
     const geoData = await geoResponse.json();
@@ -49,7 +86,10 @@ serve(async (req) => {
     );
     
     if (!currentResponse.ok) {
-      throw new Error('Failed to get current weather');
+      console.log('Current weather API error, returning fallback');
+      return new Response(JSON.stringify(getFallbackWeather(state, location)), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
     
     const currentData = await currentResponse.json();
@@ -61,7 +101,10 @@ serve(async (req) => {
     );
     
     if (!forecastResponse.ok) {
-      throw new Error('Failed to get forecast');
+      console.log('Forecast API error, returning fallback');
+      return new Response(JSON.stringify(getFallbackWeather(state, location)), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
     
     const forecastData = await forecastResponse.json();
