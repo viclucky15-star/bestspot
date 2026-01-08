@@ -104,10 +104,25 @@ export function useBusinessAccount() {
         .single();
 
       if (error) throw error;
+
+      // Add 'business' role to user_roles table
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .insert({
+          user_id: user.id,
+          role: 'business',
+        });
+
+      if (roleError) {
+        console.error('Failed to assign business role:', roleError);
+        // Don't throw - business account was created successfully
+      }
+
       return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['businessAccount'] });
+      queryClient.invalidateQueries({ queryKey: ['userRoles'] });
       toast.success('Business account created successfully!');
     },
     onError: (error) => {
