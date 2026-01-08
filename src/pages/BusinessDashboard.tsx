@@ -83,9 +83,6 @@ export default function BusinessDashboard() {
               </div>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => navigate('/business/settings')}>
-            <Settings className="h-5 w-5" />
-          </Button>
         </div>
       </div>
 
