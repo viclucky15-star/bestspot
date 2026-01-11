@@ -1,8 +1,9 @@
-import { Heart, MapPin, Navigation, ExternalLink } from 'lucide-react';
+import { Heart, MapPin, Navigation, ExternalLink, CalendarCheck } from 'lucide-react';
 import { Location, Category, BudgetLevel } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { BookingDialog } from '@/components/BookingDialog';
 
 interface LocationCardCompactProps {
   location: Location;
@@ -117,6 +118,22 @@ export function LocationCardCompact({ location, isFavorite, onToggleFavorite, on
             <Navigation className="w-3 h-3 mr-1" />
             Go
           </Button>
+          {location.is_claimed && location.owner_business_id && (
+            <BookingDialog 
+              location={location}
+              trigger={
+                <Button 
+                  size="sm" 
+                  variant="secondary"
+                  className="h-7 text-xs px-2 gap-1"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <CalendarCheck className="w-3 h-3" />
+                  Book
+                </Button>
+              }
+            />
+          )}
         </div>
       </div>
     </div>

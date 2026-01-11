@@ -37,6 +37,8 @@ export interface Location {
   total_reviews: number;
   amenities: string[];
   is_featured: boolean;
+  is_claimed: boolean;
+  owner_business_id: string | null;
   created_at: string;
 }
 
