@@ -194,14 +194,15 @@ const LocationDetail = () => {
           </div>
         </div>
 
-        {/* Claim Business CTA */}
-        <div className="mt-4">
-          <ClaimBusinessCTA 
-            locationId={location.id} 
-            locationName={location.name}
-            isClaimed={(location as any).is_claimed}
-          />
-        </div>
+        {/* Claim Business CTA - Only show for unclaimed locations */}
+        {!location.is_claimed && (
+          <div className="mt-4">
+            <ClaimBusinessCTA 
+              locationId={location.id} 
+              locationName={location.name}
+            />
+          </div>
+        )}
 
         {/* Ad Banner */}
         <div className="mt-4">
