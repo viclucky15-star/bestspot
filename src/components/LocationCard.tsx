@@ -1,9 +1,10 @@
-import { Heart, MapPin, Star, Clock, ExternalLink, Navigation } from 'lucide-react';
+import { Heart, MapPin, Star, Clock, ExternalLink, Navigation, CalendarCheck } from 'lucide-react';
 import { Location, Category, BudgetLevel } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ShareButton } from '@/components/ShareButton';
+import { BookingDialog } from '@/components/BookingDialog';
 
 interface LocationCardProps {
   location: Location;
@@ -177,6 +178,22 @@ export function LocationCard({ location, isFavorite, onToggleFavorite, onClick, 
             <Navigation className="w-4 h-4 mr-1" />
             Go
           </Button>
+          {location.is_claimed && location.owner_business_id && (
+            <BookingDialog 
+              location={location}
+              trigger={
+                <Button 
+                  size="sm" 
+                  variant="secondary"
+                  className="gap-1"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <CalendarCheck className="w-4 h-4" />
+                  Book
+                </Button>
+              }
+            />
+          )}
           <ShareButton 
             title={location.name}
             text={`Check out ${location.name} in ${location.area}, ${location.state || 'Enugu'}! ${location.description || ''}`}

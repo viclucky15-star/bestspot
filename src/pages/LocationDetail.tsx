@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Heart, MapPin, Clock, Wallet, Star, Calendar, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Heart, MapPin, Clock, Wallet, Star, Calendar, ExternalLink, CalendarCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ShareButton } from '@/components/ShareButton';
 import { ClaimBusinessCTA } from '@/components/business/ClaimBusinessCTA';
 import { AdBanner } from '@/components/ads/AdBanner';
+import { BookingDialog } from '@/components/BookingDialog';
 
 const LocationDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -176,9 +177,20 @@ const LocationDetail = () => {
                 </a>
               </Button>
             )}
-            <Button onClick={() => navigate('/planner', { state: { locationId: location.id } })} className="flex-1 gap-2">
-              <Calendar className="w-4 h-4" /> Plan a Visit
-            </Button>
+            {location.is_claimed && location.owner_business_id ? (
+              <BookingDialog 
+                location={location}
+                trigger={
+                  <Button className="flex-1 gap-2">
+                    <CalendarCheck className="w-4 h-4" /> Book Now
+                  </Button>
+                }
+              />
+            ) : (
+              <Button onClick={() => navigate('/planner', { state: { locationId: location.id } })} className="flex-1 gap-2">
+                <Calendar className="w-4 h-4" /> Plan a Visit
+              </Button>
+            )}
           </div>
         </div>
 
