@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, Sun, Moon, Monitor, Clock, Share2, Users, LogOut, ChevronRight, Building2 } from 'lucide-react';
+import { Menu, Sun, Moon, Monitor, Clock, Share2, Users, LogOut, ChevronRight, Building2, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -26,7 +26,7 @@ export function MainMenu() {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const { user, signOut } = useAuth();
-  const { isBusiness } = useUserRole();
+  const { isBusiness, isAdmin } = useUserRole();
   const [open, setOpen] = useState(false);
   const [recentlyViewed, setRecentlyViewed] = useState<RecentlyViewed[]>([]);
   const [loadingRecent, setLoadingRecent] = useState(false);
@@ -180,6 +180,18 @@ export function MainMenu() {
               >
                 <Building2 className="h-5 w-5 text-primary" />
                 <span className="flex-1 text-left font-medium">Business Dashboard</span>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </button>
+            )}
+
+            {/* Admin Panel - Only visible to admins */}
+            {isAdmin && (
+              <button
+                onClick={() => handleNavigate('/admin')}
+                className="w-full flex items-center gap-3 p-4 hover:bg-muted transition-colors border-b"
+              >
+                <Shield className="h-5 w-5 text-destructive" />
+                <span className="flex-1 text-left font-medium">Admin Panel</span>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </button>
             )}
