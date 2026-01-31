@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Calendar, Users, Map, Building2 } from 'lucide-react';
+import { MapPin, Calendar, Users, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useFeaturedLocations } from '@/hooks/useLocations';
@@ -57,13 +57,13 @@ const Index = () => {
               Discover Your BestSpot
             </h1>
             
-            <p className="text-foreground/90 mb-6 drop-shadow-md bg-muted-foreground">
+            <p className="text-foreground/90 mb-6 drop-shadow-md bg-[#db5783]/[0.37]">
               {selectedState ? `Romantic spots, picnic areas, hiking trails & events in ${selectedState} State` : 'Explore 5 states across South-East Nigeria'}
             </p>
 
             <div className="flex gap-3 justify-center flex-wrap">
               <Button onClick={() => navigate('/states')} variant="outline" className="gap-2 shadow-lg backdrop-blur-sm">
-                <Map className="w-4 h-4" /> Browse States
+                 Browse States
               </Button>
               <Button onClick={() => navigate('/explore')} className="gap-2 shadow-lg">
                 <MapPin className="w-4 h-4" /> Explore Places
