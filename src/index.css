@@ -16,8 +16,8 @@
     --popover: 75 40% 98%;
     --popover-foreground: 85 40% 12%;
 
-    /* Primary - Bright Lime */
-    --primary: 84 80% 45%;
+    /* Primary - Darker Lime for better contrast */
+    --primary: 84 75% 35%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary - Soft Green */
