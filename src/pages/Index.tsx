@@ -12,16 +12,24 @@ import { MainMenu } from '@/components/MainMenu';
 import { StateSelector } from '@/components/StateSelector';
 import heroImage from '@/assets/hero-picnic.jpg';
 import bestspotLogo from '@/assets/bestspot-logo.png';
-
 const Index = () => {
   const navigate = useNavigate();
-  const { selectedState, stateInfo } = useStateSelection();
-  const { locations: featured, loading } = useFeaturedLocations(selectedState);
-  const { toggleFavorite, isFavorite } = useFavorites();
-  const { isBusiness } = useUserRole();
-
-  return (
-    <div className="min-h-screen bg-background">
+  const {
+    selectedState,
+    stateInfo
+  } = useStateSelection();
+  const {
+    locations: featured,
+    loading
+  } = useFeaturedLocations(selectedState);
+  const {
+    toggleFavorite,
+    isFavorite
+  } = useFavorites();
+  const {
+    isBusiness
+  } = useUserRole();
+  return <div className="min-h-screen bg-background">
       {/* Hero Section with Background Image */}
       <div className="relative overflow-hidden">
         {/* Background Image */}
@@ -49,10 +57,8 @@ const Index = () => {
               Discover Your BestSpot
             </h1>
             
-            <p className="text-foreground/90 mb-6 drop-shadow-md bg-[#db5783]/[0.37]">
-              {selectedState 
-                ? `Romantic spots, picnic areas, hiking trails & events in ${selectedState} State`
-                : 'Explore 5 states across South-East Nigeria'}
+            <p className="text-foreground/90 mb-6 drop-shadow-md bg-muted-foreground">
+              {selectedState ? `Romantic spots, picnic areas, hiking trails & events in ${selectedState} State` : 'Explore 5 states across South-East Nigeria'}
             </p>
 
             <div className="flex gap-3 justify-center flex-wrap">
@@ -65,17 +71,11 @@ const Index = () => {
             </div>
 
             {/* Business Dashboard Button - Only visible to business owners */}
-            {isBusiness && (
-              <div className="mt-4">
-                <Button 
-                  onClick={() => navigate('/business/dashboard')} 
-                  variant="secondary" 
-                  className="gap-2 shadow-lg"
-                >
+            {isBusiness && <div className="mt-4">
+                <Button onClick={() => navigate('/business/dashboard')} variant="secondary" className="gap-2 shadow-lg">
                   <Building2 className="w-4 h-4" /> Dashboard Panel
                 </Button>
-              </div>
-            )}
+              </div>}
           </div>
         </div>
       </div>
@@ -85,20 +85,10 @@ const Index = () => {
         <div>
           <h2 className="font-display text-lg font-semibold mb-3">Quick Access</h2>
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {STATES.map((state) => (
-              <button
-                key={state.name}
-                onClick={() => navigate(`/explore?state=${state.name}`)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
-                  selectedState === state.name
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                }`}
-              >
+            {STATES.map(state => <button key={state.name} onClick={() => navigate(`/explore?state=${state.name}`)} className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${selectedState === state.name ? 'bg-primary text-primary-foreground shadow-md' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'}`}>
                 <span>{state.icon}</span>
                 <span className="text-sm font-medium">{state.name}</span>
-              </button>
-            ))}
+              </button>)}
           </div>
         </div>
 
@@ -107,21 +97,26 @@ const Index = () => {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-4 gap-3">
-          {[
-            { icon: '💕', label: 'Romantic', category: 'romantic' },
-            { icon: '🧺', label: 'Picnic', category: 'picnic' },
-            { icon: '🎉', label: 'Events', category: 'event' },
-            { icon: '🥾', label: 'Hiking', category: 'hiking' }
-          ].map(item => (
-            <button 
-              key={item.category} 
-              onClick={() => navigate(`/explore?category=${item.category}`)} 
-              className="flex flex-col items-center gap-2 p-4 bg-card rounded-xl border hover:shadow-md transition-shadow"
-            >
+          {[{
+          icon: '💕',
+          label: 'Romantic',
+          category: 'romantic'
+        }, {
+          icon: '🧺',
+          label: 'Picnic',
+          category: 'picnic'
+        }, {
+          icon: '🎉',
+          label: 'Events',
+          category: 'event'
+        }, {
+          icon: '🥾',
+          label: 'Hiking',
+          category: 'hiking'
+        }].map(item => <button key={item.category} onClick={() => navigate(`/explore?category=${item.category}`)} className="flex flex-col items-center gap-2 p-4 bg-card rounded-xl border hover:shadow-md transition-shadow">
               <span className="text-2xl">{item.icon}</span>
               <span className="text-xs font-medium">{item.label}</span>
-            </button>
-          ))}
+            </button>)}
         </div>
 
         {/* Featured Locations */}
@@ -133,29 +128,14 @@ const Index = () => {
             <Button variant="ghost" size="sm" onClick={() => navigate('/explore')}>See all</Button>
           </div>
           
-        {loading ? (
-            <div className="grid grid-cols-2 gap-3">
+        {loading ? <div className="grid grid-cols-2 gap-3">
               {[1, 2, 3, 4].map(i => <div key={i} className="h-48 bg-muted rounded-xl animate-pulse" />)}
-            </div>
-          ) : featured.length === 0 ? (
-            <div className="text-center py-8 bg-muted/50 rounded-xl">
+            </div> : featured.length === 0 ? <div className="text-center py-8 bg-muted/50 rounded-xl">
               <p className="text-muted-foreground">No featured places {selectedState && `in ${selectedState}`} yet</p>
               <Button variant="link" onClick={() => navigate('/explore')}>Explore all locations</Button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3">
-              {featured.slice(0, 6).map(location => (
-                <LocationCard 
-                  key={location.id} 
-                  location={location} 
-                  isFavorite={isFavorite(location.id)} 
-                  onToggleFavorite={() => toggleFavorite(location.id)} 
-                  onClick={() => navigate(`/location/${location.id}`)} 
-                  compact
-                />
-              ))}
-            </div>
-          )}
+            </div> : <div className="grid grid-cols-2 gap-3">
+              {featured.slice(0, 6).map(location => <LocationCard key={location.id} location={location} isFavorite={isFavorite(location.id)} onToggleFavorite={() => toggleFavorite(location.id)} onClick={() => navigate(`/location/${location.id}`)} compact />)}
+            </div>}
         </div>
 
         {/* Community CTA */}
@@ -166,8 +146,6 @@ const Index = () => {
           <Button variant="outline" onClick={() => navigate('/community')}>Explore Community</Button>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
