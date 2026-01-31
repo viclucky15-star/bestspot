@@ -37,19 +37,19 @@
 
     --border: 75 25% 85%;
     --input: 75 25% 85%;
-    --ring: 84 80% 45%;
+    --ring: 84 65% 22%;
 
     --radius: 0.75rem;
 
     /* Custom semantic colors */
     --romantic: 340 65% 55%;
     --romantic-light: 340 60% 95%;
-    --picnic: 84 80% 45%;
-    --picnic-light: 84 50% 92%;
+    --picnic: 84 65% 22%;
+    --picnic-light: 84 40% 88%;
     --event: 25 90% 55%;
     --event-light: 25 60% 92%;
-    --hiking: 85 60% 40%;
-    --hiking-light: 85 50% 90%;
+    --hiking: 85 55% 28%;
+    --hiking-light: 85 40% 88%;
     
     --success: 142 70% 45%;
     --success-foreground: 0 0% 100%;
@@ -74,12 +74,12 @@
 
     --sidebar-background: 75 60% 95%;
     --sidebar-foreground: 85 40% 12%;
-    --sidebar-primary: 84 80% 45%;
+    --sidebar-primary: 84 65% 22%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 75 25% 90%;
     --sidebar-accent-foreground: 85 40% 12%;
     --sidebar-border: 75 25% 85%;
-    --sidebar-ring: 84 80% 45%;
+    --sidebar-ring: 84 65% 22%;
   }
 
   .dark {
