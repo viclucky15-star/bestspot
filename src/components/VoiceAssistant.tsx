@@ -5,10 +5,9 @@ import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
+import { usePremiumPayment } from '@/hooks/usePremiumPayment';
 import { useAuth } from '@/hooks/useAuth';
 import aiAssistantIcon from '@/assets/ai-assistant-icon.png';
-
-const PAYSTACK_LINK = import.meta.env.VITE_PAYSTACK_PREMIUM_LINK || '';
 
 // Type declarations for Web Speech API
 interface SpeechRecognitionEvent extends Event {
@@ -75,6 +74,7 @@ export const VoiceAssistant = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { isPremium, isLoading: isPremiumLoading } = usePremiumStatus();
+  const { upgradeToPremium, isProcessing: isUpgrading, premiumPrice } = usePremiumPayment();
   const { user } = useAuth();
 
   // Scroll to bottom when messages change
@@ -258,9 +258,19 @@ export const VoiceAssistant = () => {
   };
 
   const handleUpgrade = () => {
-    if (PAYSTACK_LINK) {
-      window.open(PAYSTACK_LINK, '_blank');
+    if (!user) {
+      window.location.href = '/auth';
+      return;
     }
+    upgradeToPremium.mutate();
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: 'NGN',
+      minimumFractionDigits: 0,
+    }).format(price);
   };
 
   if (!isOpen) {
@@ -338,10 +348,19 @@ export const VoiceAssistant = () => {
             <Button 
               onClick={handleUpgrade}
               className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 w-full max-w-xs"
-              disabled={!PAYSTACK_LINK}
+              disabled={isUpgrading}
             >
-              <Crown className="w-4 h-4" />
-              {user ? 'Upgrade to Premium' : 'Sign in to Upgrade'}
+              {isUpgrading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Crown className="w-4 h-4" />
+                  {user ? `Upgrade for ${formatPrice(premiumPrice)}` : 'Sign in to Upgrade'}
+                </>
+              )}
             </Button>
 
             <p className="text-xs text-muted-foreground">

@@ -1,17 +1,16 @@
 import { ReactNode } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
+import { usePremiumPayment } from '@/hooks/usePremiumPayment';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Crown, Sparkles, Lock } from 'lucide-react';
+import { Crown, Sparkles, Lock, Loader2 } from 'lucide-react';
 
 interface PremiumGateProps {
   children: ReactNode;
   feature: 'weather' | 'ai-assistant';
   fallback?: ReactNode;
 }
-
-const PAYSTACK_LINK = import.meta.env.VITE_PAYSTACK_PREMIUM_LINK || '';
 
 const featureDetails = {
   'weather': {
@@ -29,6 +28,7 @@ const featureDetails = {
 export function PremiumGate({ children, feature, fallback }: PremiumGateProps) {
   const { user } = useAuth();
   const { isPremium, isLoading } = usePremiumStatus();
+  const { upgradeToPremium, isProcessing, premiumPrice } = usePremiumPayment();
 
   // Show loading state
   if (isLoading) {
@@ -44,9 +44,19 @@ export function PremiumGate({ children, feature, fallback }: PremiumGateProps) {
   const Icon = details.icon;
 
   const handleUpgrade = () => {
-    if (PAYSTACK_LINK) {
-      window.open(PAYSTACK_LINK, '_blank');
+    if (!user) {
+      window.location.href = '/auth';
+      return;
     }
+    upgradeToPremium.mutate();
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: 'NGN',
+      minimumFractionDigits: 0,
+    }).format(price);
   };
 
   return (
@@ -76,10 +86,19 @@ export function PremiumGate({ children, feature, fallback }: PremiumGateProps) {
         <Button 
           onClick={handleUpgrade}
           className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
-          disabled={!PAYSTACK_LINK}
+          disabled={isProcessing}
         >
-          <Crown className="w-4 h-4" />
-          {user ? 'Upgrade to Premium' : 'Sign in to Upgrade'}
+          {isProcessing ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            <>
+              <Crown className="w-4 h-4" />
+              {user ? `Upgrade for ${formatPrice(premiumPrice)}` : 'Sign in to Upgrade'}
+            </>
+          )}
         </Button>
 
         {/* Premium benefits */}
