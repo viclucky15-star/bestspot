@@ -1,0 +1,94 @@
+import { ReactNode } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { usePremiumStatus } from '@/hooks/usePremiumStatus';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Crown, Sparkles, Lock } from 'lucide-react';
+
+interface PremiumGateProps {
+  children: ReactNode;
+  feature: 'weather' | 'ai-assistant';
+  fallback?: ReactNode;
+}
+
+const PAYSTACK_LINK = import.meta.env.VITE_PAYSTACK_PREMIUM_LINK || '';
+
+const featureDetails = {
+  'weather': {
+    title: 'Premium Weather',
+    description: 'Get real-time weather updates and personalized suggestions for your outdoor activities.',
+    icon: Sparkles,
+  },
+  'ai-assistant': {
+    title: 'AI Date Assistant',
+    description: 'Your personal AI companion to help plan the perfect date with voice interactions.',
+    icon: Crown,
+  },
+};
+
+export function PremiumGate({ children, feature, fallback }: PremiumGateProps) {
+  const { user } = useAuth();
+  const { isPremium, isLoading } = usePremiumStatus();
+
+  // Show loading state
+  if (isLoading) {
+    return fallback || null;
+  }
+
+  // If premium, show the feature
+  if (isPremium) {
+    return <>{children}</>;
+  }
+
+  const details = featureDetails[feature];
+  const Icon = details.icon;
+
+  const handleUpgrade = () => {
+    if (PAYSTACK_LINK) {
+      window.open(PAYSTACK_LINK, '_blank');
+    }
+  };
+
+  return (
+    <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none" />
+      
+      <div className="relative p-5 text-center">
+        {/* Lock Icon */}
+        <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+          <Lock className="w-6 h-6 text-primary" />
+        </div>
+
+        {/* Feature Icon & Title */}
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <Icon className="w-5 h-5 text-primary" />
+          <h3 className="font-display text-lg font-bold text-foreground">
+            {details.title}
+          </h3>
+        </div>
+
+        {/* Description */}
+        <p className="text-sm text-muted-foreground mb-4 max-w-xs mx-auto">
+          {details.description}
+        </p>
+
+        {/* Upgrade Button */}
+        <Button 
+          onClick={handleUpgrade}
+          className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+          disabled={!PAYSTACK_LINK}
+        >
+          <Crown className="w-4 h-4" />
+          {user ? 'Upgrade to Premium' : 'Sign in to Upgrade'}
+        </Button>
+
+        {/* Premium benefits */}
+        <div className="mt-4 pt-4 border-t border-border/50">
+          <p className="text-xs text-muted-foreground">
+            ✨ One-time payment • Lifetime access
+          </p>
+        </div>
+      </div>
+    </Card>
+  );
+}

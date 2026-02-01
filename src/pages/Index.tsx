@@ -10,6 +10,7 @@ import { LocationCard } from '@/components/LocationCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
 import { MainMenu } from '@/components/MainMenu';
 import { StateSelector } from '@/components/StateSelector';
+import { PremiumGate } from '@/components/PremiumGate';
 import heroImage from '@/assets/hero-picnic.jpg';
 import bestspotLogo from '@/assets/bestspot-logo.png';
 const Index = () => {
@@ -92,8 +93,10 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Weather Widget */}
-        <WeatherWidget />
+        {/* Weather Widget - Premium Feature */}
+        <PremiumGate feature="weather">
+          <WeatherWidget />
+        </PremiumGate>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-4 gap-3">
