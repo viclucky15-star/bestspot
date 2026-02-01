@@ -1055,11 +1055,13 @@ export type Database = {
           full_name: string | null
           id: string
           is_online: boolean | null
+          is_premium: boolean | null
           last_seen: string | null
           phone_number: string | null
           phone_verification_code: string | null
           phone_verification_expires_at: string | null
           phone_verified: boolean | null
+          premium_purchased_at: string | null
           updated_at: string
           username: string | null
         }
@@ -1072,11 +1074,13 @@ export type Database = {
           full_name?: string | null
           id: string
           is_online?: boolean | null
+          is_premium?: boolean | null
           last_seen?: string | null
           phone_number?: string | null
           phone_verification_code?: string | null
           phone_verification_expires_at?: string | null
           phone_verified?: boolean | null
+          premium_purchased_at?: string | null
           updated_at?: string
           username?: string | null
         }
@@ -1089,11 +1093,13 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_online?: boolean | null
+          is_premium?: boolean | null
           last_seen?: string | null
           phone_number?: string | null
           phone_verification_code?: string | null
           phone_verification_expires_at?: string | null
           phone_verified?: boolean | null
+          premium_purchased_at?: string | null
           updated_at?: string
           username?: string | null
         }

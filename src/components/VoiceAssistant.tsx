@@ -1,10 +1,14 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Mic, MicOff, Volume2, VolumeX, X, Loader2, Send } from 'lucide-react';
+import { Mic, MicOff, Volume2, VolumeX, X, Loader2, Send, Crown, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { usePremiumStatus } from '@/hooks/usePremiumStatus';
+import { useAuth } from '@/hooks/useAuth';
 import aiAssistantIcon from '@/assets/ai-assistant-icon.png';
+
+const PAYSTACK_LINK = import.meta.env.VITE_PAYSTACK_PREMIUM_LINK || '';
 
 // Type declarations for Web Speech API
 interface SpeechRecognitionEvent extends Event {
@@ -70,6 +74,8 @@ export const VoiceAssistant = () => {
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { isPremium, isLoading: isPremiumLoading } = usePremiumStatus();
+  const { user } = useAuth();
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -251,6 +257,12 @@ export const VoiceAssistant = () => {
     }
   };
 
+  const handleUpgrade = () => {
+    if (PAYSTACK_LINK) {
+      window.open(PAYSTACK_LINK, '_blank');
+    }
+  };
+
   if (!isOpen) {
     return (
       <button
@@ -258,8 +270,86 @@ export const VoiceAssistant = () => {
         className="fixed bottom-24 right-4 z-50 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 overflow-hidden animate-pulse"
         aria-label="Open voice assistant"
       >
-        <img src={aiAssistantIcon} alt="Date Assistant" className="w-14 h-14 object-cover" />
+        <div className="relative">
+          <img src={aiAssistantIcon} alt="Date Assistant" className="w-14 h-14 object-cover" />
+          {!isPremium && !isPremiumLoading && (
+            <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+              <Crown className="w-3 h-3 text-primary-foreground" />
+            </div>
+          )}
+        </div>
       </button>
+    );
+  }
+
+  // Show premium upgrade prompt for non-premium users
+  if (!isPremium && !isPremiumLoading) {
+    return (
+      <>
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
+        
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t rounded-t-3xl shadow-2xl animate-slide-up">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b">
+            <div className="flex items-center gap-3">
+              <img src={aiAssistantIcon} alt="Date Assistant" className="w-10 h-10 rounded-full object-cover" />
+              <div>
+                <h3 className="font-semibold">Date Assistant</h3>
+                <p className="text-xs text-muted-foreground">Premium Feature</p>
+              </div>
+            </div>
+            <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+
+          {/* Premium Upgrade Content */}
+          <div className="p-6 text-center space-y-4">
+            <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <Lock className="w-8 h-8 text-primary" />
+            </div>
+            
+            <div>
+              <h3 className="font-display text-xl font-bold mb-2">Unlock AI Date Assistant</h3>
+              <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                Your personal AI companion to help plan the perfect date with voice interactions and personalized suggestions.
+              </p>
+            </div>
+
+            <div className="space-y-2 text-left max-w-xs mx-auto">
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-primary">✓</span>
+                <span>Voice-enabled conversations</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-primary">✓</span>
+                <span>Personalized date suggestions</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-primary">✓</span>
+                <span>Gift and activity ideas</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-primary">✓</span>
+                <span>Romantic message templates</span>
+              </div>
+            </div>
+
+            <Button 
+              onClick={handleUpgrade}
+              className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 w-full max-w-xs"
+              disabled={!PAYSTACK_LINK}
+            >
+              <Crown className="w-4 h-4" />
+              {user ? 'Upgrade to Premium' : 'Sign in to Upgrade'}
+            </Button>
+
+            <p className="text-xs text-muted-foreground">
+              ✨ One-time payment • Lifetime access
+            </p>
+          </div>
+        </div>
+      </>
     );
   }
 
