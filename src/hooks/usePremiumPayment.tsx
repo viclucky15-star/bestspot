@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
 const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '';
-const PREMIUM_PRICE = 5000; // ₦5,000 one-time payment
+const PREMIUM_PRICE = 1600; // ₦1,600 one-time payment
 
 interface PaystackConfig {
   email: string;
