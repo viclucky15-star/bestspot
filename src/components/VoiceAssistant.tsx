@@ -1,12 +1,14 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Mic, MicOff, Volume2, VolumeX, X, Loader2, Send, Crown, Lock } from 'lucide-react';
+import { Mic, MicOff, Volume2, VolumeX, X, Loader2, Send, Crown, Lock, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 import { usePremiumPayment } from '@/hooks/usePremiumPayment';
+import { usePaymentReceipts } from '@/hooks/usePaymentReceipts';
 import { useAuth } from '@/hooks/useAuth';
+import { BankTransferDialog } from '@/components/BankTransferDialog';
 import aiAssistantIcon from '@/assets/ai-assistant-icon.png';
 
 // Type declarations for Web Speech API
@@ -74,8 +76,13 @@ export const VoiceAssistant = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { isPremium, isLoading: isPremiumLoading } = usePremiumStatus();
-  const { upgradeToPremium, isProcessing: isUpgrading, premiumPrice } = usePremiumPayment();
+  const { premiumPrice } = usePremiumPayment();
+  const { getPendingReceipt } = usePaymentReceipts();
   const { user } = useAuth();
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  
+  // Check for pending premium receipt
+  const pendingReceipt = getPendingReceipt('premium_upgrade');
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -262,7 +269,7 @@ export const VoiceAssistant = () => {
       window.location.href = '/auth';
       return;
     }
-    upgradeToPremium.mutate();
+    setShowPaymentDialog(true);
   };
 
   const formatPrice = (price: number) => {
@@ -289,6 +296,66 @@ export const VoiceAssistant = () => {
           )}
         </div>
       </button>
+    );
+  }
+
+  // Show pending payment status if user has submitted a receipt
+  if (pendingReceipt && !isPremium && !isPremiumLoading) {
+    return (
+      <>
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
+        
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t rounded-t-3xl shadow-2xl animate-slide-up">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b">
+            <div className="flex items-center gap-3">
+              <img src={aiAssistantIcon} alt="Date Assistant" className="w-10 h-10 rounded-full object-cover" />
+              <div>
+                <h3 className="font-semibold">Date Assistant</h3>
+                <p className="text-xs text-muted-foreground">Payment Pending</p>
+              </div>
+            </div>
+            <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+
+          {/* Pending Payment Content */}
+          <div className="p-6 text-center space-y-4">
+            <div className="mx-auto w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center">
+              <Clock className="w-8 h-8 text-amber-500" />
+            </div>
+            
+            <div>
+              <h3 className="font-display text-xl font-bold mb-2">Payment Being Verified</h3>
+              <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                Your payment is being reviewed. You'll get access once approved.
+              </p>
+            </div>
+
+            <Button 
+              variant="outline"
+              onClick={() => setShowPaymentDialog(true)}
+              className="gap-2"
+            >
+              <Clock className="w-4 h-4" />
+              View Status
+            </Button>
+
+            <p className="text-xs text-muted-foreground">
+              ⏳ Usually verified within 24 hours
+            </p>
+          </div>
+        </div>
+
+        <BankTransferDialog
+          open={showPaymentDialog}
+          onOpenChange={setShowPaymentDialog}
+          amount={premiumPrice}
+          paymentType="premium_upgrade"
+          existingReceipt={pendingReceipt}
+        />
+      </>
     );
   }
 
@@ -348,19 +415,9 @@ export const VoiceAssistant = () => {
             <Button 
               onClick={handleUpgrade}
               className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 w-full max-w-xs"
-              disabled={isUpgrading}
             >
-              {isUpgrading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <Crown className="w-4 h-4" />
-                  {user ? `Upgrade for ${formatPrice(premiumPrice)}` : 'Sign in to Upgrade'}
-                </>
-              )}
+              <Crown className="w-4 h-4" />
+              {user ? `Upgrade for ${formatPrice(premiumPrice)}` : 'Sign in to Upgrade'}
             </Button>
 
             <p className="text-xs text-muted-foreground">
@@ -368,6 +425,13 @@ export const VoiceAssistant = () => {
             </p>
           </div>
         </div>
+
+        <BankTransferDialog
+          open={showPaymentDialog}
+          onOpenChange={setShowPaymentDialog}
+          amount={premiumPrice}
+          paymentType="premium_upgrade"
+        />
       </>
     );
   }

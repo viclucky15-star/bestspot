@@ -4,26 +4,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { Payout } from '@/types/business';
 import { toast } from 'sonner';
 
-const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '';
-
-interface PaystackConfig {
-  email: string;
-  amount: number;
-  reference: string;
-  publicKey: string;
-  metadata?: Record<string, unknown>;
-  onSuccess: (response: { reference: string }) => void;
-  onClose: () => void;
-}
-
-declare global {
-  interface Window {
-    PaystackPop?: {
-      setup: (config: PaystackConfig) => { openIframe: () => void };
-    };
-  }
-}
-
 interface PaymentRecord {
   id: string;
   booking_id?: string;
@@ -34,7 +14,6 @@ interface PaymentRecord {
   business_amount?: number;
   payment_method?: string;
   payment_reference?: string;
-  paystack_reference?: string;
   status: string;
   created_at?: string;
   updated_at?: string;
@@ -59,26 +38,25 @@ export function usePayments() {
     enabled: !!user,
   });
 
-  const initiatePayment = useMutation({
+  // Create a payment record (pending until receipt is approved)
+  const createPaymentRecord = useMutation({
     mutationFn: async ({
       bookingId,
       businessId,
       amount,
       platformCommission,
-      email,
     }: {
       bookingId: string;
       businessId: string;
       amount: number;
       platformCommission: number;
-      email: string;
     }) => {
       const reference = `PAY-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       const businessAmount = amount - platformCommission;
 
       const { data: payment, error } = await supabase
         .from('payments')
-        .insert({
+        .insert([{
           booking_id: bookingId,
           user_id: user!.id,
           business_id: businessId,
@@ -87,73 +65,27 @@ export function usePayments() {
           business_amount: businessAmount,
           payment_reference: reference,
           status: 'pending',
-        })
+          payment_method: 'bank_transfer',
+        }])
         .select()
         .single();
 
       if (error) throw error;
-
-      return new Promise<PaymentRecord>((resolve, reject) => {
-        if (!window.PaystackPop) {
-          // If Paystack not loaded, resolve with payment for now
-          resolve(payment as PaymentRecord);
-          return;
-        }
-
-        const handler = window.PaystackPop.setup({
-          email,
-          amount: amount * 100,
-          reference,
-          publicKey: PAYSTACK_PUBLIC_KEY,
-          metadata: {
-            booking_id: bookingId,
-            payment_id: payment.id,
-          },
-          onSuccess: async (response) => {
-            await supabase
-              .from('payments')
-              .update({
-                status: 'completed',
-                paystack_reference: response.reference,
-              })
-              .eq('id', payment.id);
-
-            await supabase
-              .from('bookings')
-              .update({
-                status: 'confirmed',
-                payment_status: 'completed',
-                payment_reference: response.reference,
-              })
-              .eq('id', bookingId);
-
-            resolve(payment as PaymentRecord);
-          },
-          onClose: () => {
-            reject(new Error('Payment cancelled'));
-          },
-        });
-
-        handler.openIframe();
-      });
+      return payment as PaymentRecord;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-payments'] });
-      queryClient.invalidateQueries({ queryKey: ['user-bookings'] });
-      toast.success('Payment successful! Your booking is confirmed.');
     },
     onError: (error) => {
-      console.error('Payment failed:', error);
-      if (error.message !== 'Payment cancelled') {
-        toast.error('Payment failed. Please try again.');
-      }
+      console.error('Failed to create payment record:', error);
+      toast.error('Failed to create payment record.');
     },
   });
 
   return {
     payments,
     isLoading,
-    initiatePayment,
+    createPaymentRecord,
   };
 }
 
@@ -189,22 +121,18 @@ export function useBusinessPayouts(businessId?: string) {
     }) => {
       const { data, error } = await supabase
         .from('payouts')
-        .insert({
+        .insert([{
           business_id: businessId!,
           amount,
           bank_name: bankName,
           account_number: accountNumber,
           account_name: accountName,
           status: 'pending',
-        })
+        }])
         .select()
         .single();
 
       if (error) throw error;
-
-      // Note: Wallet balance will be deducted by admin when payout is processed
-      // For now, we just create the payout request
-
       return data;
     },
     onSuccess: () => {

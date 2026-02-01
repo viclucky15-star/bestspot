@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserBookings } from '@/hooks/useBookings';
+import { BankTransferDialog } from '@/components/BankTransferDialog';
 import { Location } from '@/types';
 import { toast } from 'sonner';
 
@@ -33,6 +34,8 @@ export function BookingDialog({ location, trigger }: BookingDialogProps) {
   const [guests, setGuests] = useState(2);
   const [specialRequests, setSpecialRequests] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [createdBookingId, setCreatedBookingId] = useState<string | null>(null);
 
   // Calculate amounts
   const baseAmount = location.estimated_budget_min || 5000;
@@ -60,7 +63,7 @@ export function BookingDialog({ location, trigger }: BookingDialogProps) {
     setIsSubmitting(true);
 
     try {
-      await createBooking.mutateAsync({
+      const booking = await createBooking.mutateAsync({
         location_id: location.id,
         business_id: location.owner_business_id,
         booking_date: format(date, 'yyyy-MM-dd'),
@@ -72,12 +75,10 @@ export function BookingDialog({ location, trigger }: BookingDialogProps) {
         special_requests: specialRequests || undefined,
       });
 
+      // Store booking ID and show payment dialog
+      setCreatedBookingId(booking.id);
       setOpen(false);
-      // Reset form
-      setDate(undefined);
-      setTime('');
-      setGuests(2);
-      setSpecialRequests('');
+      setShowPaymentDialog(true);
     } catch (error) {
       console.error('Booking error:', error);
     } finally {
@@ -85,131 +86,153 @@ export function BookingDialog({ location, trigger }: BookingDialogProps) {
     }
   };
 
+  const handlePaymentSuccess = () => {
+    // Reset form
+    setDate(undefined);
+    setTime('');
+    setGuests(2);
+    setSpecialRequests('');
+    setCreatedBookingId(null);
+    toast.success('Booking created! Pay and submit your receipt to confirm.');
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button size="sm" className="gap-1">
-            <CalendarIcon className="w-4 h-4" />
-            Book
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Book {location.name}</DialogTitle>
-          <DialogDescription>
-            Fill in the details to make a reservation at this location.
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="grid gap-4 py-4">
-          {/* Date Selection */}
-          <div className="grid gap-2">
-            <Label htmlFor="date">Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="date"
-                  variant="outline"
-                  className={cn(
-                    "justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : "Pick a date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  disabled={(date) => date < new Date()}
-                  initialFocus
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          {trigger || (
+            <Button size="sm" className="gap-1">
+              <CalendarIcon className="w-4 h-4" />
+              Book
+            </Button>
+          )}
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Book {location.name}</DialogTitle>
+            <DialogDescription>
+              Fill in the details to make a reservation at this location.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            {/* Date Selection */}
+            <div className="grid gap-2">
+              <Label htmlFor="date">Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="date"
+                    variant="outline"
+                    className={cn(
+                      "justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Time Selection */}
+            <div className="grid gap-2">
+              <Label htmlFor="time">Time (optional)</Label>
+              <div className="relative">
+                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="time"
+                  type="time"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  className="pl-10"
                 />
-              </PopoverContent>
-            </Popover>
+              </div>
+            </div>
+
+            {/* Number of Guests */}
+            <div className="grid gap-2">
+              <Label htmlFor="guests">Number of Guests</Label>
+              <div className="relative">
+                <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="guests"
+                  type="number"
+                  min={1}
+                  max={50}
+                  value={guests}
+                  onChange={(e) => setGuests(parseInt(e.target.value) || 1)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            {/* Special Requests */}
+            <div className="grid gap-2">
+              <Label htmlFor="requests">Special Requests (optional)</Label>
+              <div className="relative">
+                <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Textarea
+                  id="requests"
+                  placeholder="Any special requirements or requests..."
+                  value={specialRequests}
+                  onChange={(e) => setSpecialRequests(e.target.value)}
+                  className="pl-10 min-h-[80px]"
+                />
+              </div>
+            </div>
+
+            {/* Price Summary */}
+            <div className="rounded-lg bg-muted/50 p-4 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Base amount</span>
+                <span>₦{baseAmount.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Service fee</span>
+                <span>₦{platformFee.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between font-semibold pt-2 border-t">
+                <span>Total</span>
+                <span className="text-primary">₦{totalAmount.toLocaleString()}</span>
+              </div>
+            </div>
           </div>
 
-          {/* Time Selection */}
-          <div className="grid gap-2">
-            <Label htmlFor="time">Time (optional)</Label>
-            <div className="relative">
-              <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="time"
-                type="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+          <div className="flex gap-3">
+            <Button variant="outline" onClick={() => setOpen(false)} className="flex-1">
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleBooking} 
+              disabled={isSubmitting || !date}
+              className="flex-1"
+            >
+              {isSubmitting ? 'Creating Booking...' : 'Continue to Payment'}
+            </Button>
           </div>
+        </DialogContent>
+      </Dialog>
 
-          {/* Number of Guests */}
-          <div className="grid gap-2">
-            <Label htmlFor="guests">Number of Guests</Label>
-            <div className="relative">
-              <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="guests"
-                type="number"
-                min={1}
-                max={50}
-                value={guests}
-                onChange={(e) => setGuests(parseInt(e.target.value) || 1)}
-                className="pl-10"
-              />
-            </div>
-          </div>
-
-          {/* Special Requests */}
-          <div className="grid gap-2">
-            <Label htmlFor="requests">Special Requests (optional)</Label>
-            <div className="relative">
-              <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Textarea
-                id="requests"
-                placeholder="Any special requirements or requests..."
-                value={specialRequests}
-                onChange={(e) => setSpecialRequests(e.target.value)}
-                className="pl-10 min-h-[80px]"
-              />
-            </div>
-          </div>
-
-          {/* Price Summary */}
-          <div className="rounded-lg bg-muted/50 p-4 space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Base amount</span>
-              <span>₦{baseAmount.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Service fee</span>
-              <span>₦{platformFee.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between font-semibold pt-2 border-t">
-              <span>Total</span>
-              <span className="text-primary">₦{totalAmount.toLocaleString()}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={() => setOpen(false)} className="flex-1">
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleBooking} 
-            disabled={isSubmitting || !date}
-            className="flex-1"
-          >
-            {isSubmitting ? 'Booking...' : 'Confirm Booking'}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+      {/* Bank Transfer Payment Dialog */}
+      <BankTransferDialog
+        open={showPaymentDialog}
+        onOpenChange={setShowPaymentDialog}
+        amount={totalAmount}
+        paymentType="booking"
+        metadata={{ booking_id: createdBookingId }}
+        onSuccess={handlePaymentSuccess}
+      />
+    </>
   );
 }
