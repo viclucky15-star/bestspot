@@ -5,30 +5,40 @@ import { useAuth } from '@/hooks/useAuth';
 export function usePremiumStatus() {
   const { user } = useAuth();
 
-  const { data: isPremium, isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['premium-status', user?.id],
     queryFn: async () => {
-      if (!user) return false;
+      if (!user) return { isPremium: false, isAdmin: false };
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('is_premium')
-        .eq('id', user.id)
-        .single();
+      // Check both premium status and admin role in parallel
+      const [profileResult, roleResult] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('is_premium')
+          .eq('id', user.id)
+          .single(),
+        supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .eq('role', 'admin')
+          .maybeSingle()
+      ]);
 
-      if (error) {
-        console.error('Error fetching premium status:', error);
-        return false;
-      }
+      const isPremium = profileResult.data?.is_premium ?? false;
+      const isAdmin = !!roleResult.data;
 
-      return data?.is_premium ?? false;
+      return { isPremium, isAdmin };
     },
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  // Admins get premium access automatically
+  const hasPremiumAccess = data?.isPremium || data?.isAdmin || false;
+
   return {
-    isPremium: isPremium ?? false,
+    isPremium: hasPremiumAccess,
     isLoading: isLoading && !!user,
   };
 }
