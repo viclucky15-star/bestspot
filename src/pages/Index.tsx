@@ -12,7 +12,6 @@ import { MainMenu } from '@/components/MainMenu';
 import { StateSelector } from '@/components/StateSelector';
 import { PremiumGate } from '@/components/PremiumGate';
 import heroImage from '@/assets/hero-picnic.jpg';
-import bestspotLogo from '@/assets/bestspot-logo.png';
 const Index = () => {
   const navigate = useNavigate();
   const {
@@ -44,8 +43,7 @@ const Index = () => {
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <MainMenu />
-              <img src={bestspotLogo} alt="BestSpot" className="w-10 h-10" />
-              <span className="font-display font-bold text-foreground drop-shadow-lg">BestSpot</span>
+              <span className="font-display font-bold text-foreground drop-shadow-lg">Surespot</span>
             </div>
             <StateSelector compact />
           </div>
@@ -55,7 +53,7 @@ const Index = () => {
               South-East Nigeria
             </Badge>
             <h1 className="font-display text-3xl md:text-4xl mb-3 drop-shadow-lg text-primary-foreground font-medium bg-inherit">
-              Discover Your BestSpot
+              Discover Your Surespot
             </h1>
             
             <p className="text-foreground/90 mb-6 drop-shadow-md bg-[#db5783]/[0.37]">

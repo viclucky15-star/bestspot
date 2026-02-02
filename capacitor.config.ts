@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'app.lovable.18b17956fbce4d2ab62d0fdeb9b0e7b2',
-  appName: 'bestspot',
+  appName: 'surespot',
   webDir: 'dist',
   server: {
     url: 'https://18b17956-fbce-4d2a-b62d-0fdeb9b0e7b2.lovableproject.com?forceHideBadge=true',

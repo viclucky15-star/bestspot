@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { STATES, useStateSelection, NigerianState } from '@/hooks/useStateSelection';
 import { MainMenu } from '@/components/MainMenu';
-import bestspotLogo from '@/assets/bestspot-logo.png';
+
 
 const States = () => {
   const navigate = useNavigate();
@@ -21,8 +21,7 @@ const States = () => {
       <div className="bg-gradient-to-br from-primary/20 via-background to-accent/10 px-4 pt-12 pb-8">
         <div className="flex items-center gap-2 mb-6">
           <MainMenu />
-          <img src={bestspotLogo} alt="BestSpot" className="w-10 h-10" />
-          <span className="font-display font-bold text-foreground">BestSpot</span>
+          <span className="font-display font-bold text-foreground">Surespot</span>
         </div>
 
         <div className="max-w-lg mx-auto text-center">

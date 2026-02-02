@@ -9,7 +9,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import bestspotLogo from '@/assets/bestspot-logo.png';
+
 
 type AuthStep = 'auth' | 'phone' | 'otp' | 'business-info' | 'success';
 

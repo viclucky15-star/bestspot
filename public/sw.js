@@ -1,6 +1,6 @@
-const CACHE_NAME = 'bestspot-v1';
-const STATIC_CACHE = 'bestspot-static-v1';
-const DYNAMIC_CACHE = 'bestspot-dynamic-v1';
+const CACHE_NAME = 'surespot-v1';
+const STATIC_CACHE = 'surespot-static-v1';
+const DYNAMIC_CACHE = 'surespot-dynamic-v1';
 
 // Static assets to cache immediately
 const STATIC_ASSETS = [

@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import bestspotLogo from '@/assets/bestspot-logo.png';
+
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -78,7 +78,7 @@ const Auth = () => {
           }
         }
         
-        toast({ title: "Account created! 🎉", description: "Welcome to BestSpot" });
+        toast({ title: "Account created! 🎉", description: "Welcome to Surespot" });
         navigate('/');
       }
     } catch (error: any) {
@@ -97,11 +97,11 @@ const Auth = () => {
 
         <Card className="border-0 shadow-xl">
           <CardHeader className="text-center pb-2">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <img src={bestspotLogo} alt="BestSpot" className="w-16 h-16" />
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+              <Heart className="w-8 h-8 text-primary" />
             </div>
             <CardTitle className="font-display text-2xl">{isLogin ? 'Welcome Back' : 'Create Account'}</CardTitle>
-            <CardDescription>{isLogin ? 'Sign in to continue exploring' : 'Join BestSpot today'}</CardDescription>
+            <CardDescription>{isLogin ? 'Sign in to continue exploring' : 'Join Surespot today'}</CardDescription>
           </CardHeader>
 
           <CardContent>

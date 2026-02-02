@@ -1,7 +1,7 @@
 {
-  "name": "BestSpot",
-  "short_name": "BestSpot",
-  "description": "Discover romantic spots, picnic areas, hiking trails & events in Enugu State",
+  "name": "Surespot",
+  "short_name": "Surespot",
+  "description": "Discover romantic spots, picnic areas, hiking trails & events in South-East Nigeria",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fdfaf7",
