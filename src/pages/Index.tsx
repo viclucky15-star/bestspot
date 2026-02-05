@@ -49,10 +49,7 @@ const Index = () => {
           </div>
           
           <div className="max-w-lg mx-auto text-center pt-8 text-white">
-            <Badge variant="secondary" className="mb-3 bg-primary/20 text-primary-foreground border-0">
-              South-East Nigeria
-            </Badge>
-            <h1 className="font-display text-3xl md:text-4xl mb-3 drop-shadow-lg text-primary-foreground font-medium bg-inherit">
+            <h1 className="font-display text-3xl md:text-4xl drop-shadow-lg text-primary-foreground font-medium">
               Discover Your Surespot
             </h1>
 
