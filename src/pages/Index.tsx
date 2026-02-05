@@ -55,12 +55,8 @@ const Index = () => {
             <h1 className="font-display text-3xl md:text-4xl mb-3 drop-shadow-lg text-primary-foreground font-medium bg-inherit">
               Discover Your Surespot
             </h1>
-            
-            <p className="text-foreground/90 mb-6 drop-shadow-md bg-[#db5783]/[0.37]">
-              {selectedState ? `Romantic spots, picnic areas, hiking trails & events in ${selectedState} State` : 'Explore 5 states across South-East Nigeria'}
-            </p>
 
-            <div className="flex gap-3 justify-center flex-wrap">
+            <div className="flex gap-3 justify-center flex-wrap mt-6">
               <Button onClick={() => navigate('/states')} variant="outline" className="gap-2 shadow-lg backdrop-blur-sm">
                  Browse States
               </Button>
