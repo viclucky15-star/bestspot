@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Calendar, Users, Building2 } from 'lucide-react';
+import { MapPin, Users, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { useFeaturedLocations } from '@/hooks/useLocations';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useStateSelection, STATES } from '@/hooks/useStateSelection';
@@ -11,7 +10,8 @@ import { WeatherWidget } from '@/components/WeatherWidget';
 import { MainMenu } from '@/components/MainMenu';
 import { StateSelector } from '@/components/StateSelector';
 import { PremiumGate } from '@/components/PremiumGate';
-import heroImage from '@/assets/hero-picnic.jpg';
+import { HeroSlideshow } from '@/components/HeroSlideshow';
+
 const Index = () => {
   const navigate = useNavigate();
   const {
@@ -31,16 +31,13 @@ const Index = () => {
   } = useUserRole();
   return <div className="min-h-screen bg-background">
       {/* Hero Section with Background Image */}
-      <div className="relative overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0">
-          <img src={heroImage} alt="Couple enjoying scenic view" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background" />
-        </div>
+      <div className="relative overflow-hidden px-4 pt-4">
+        {/* Slideshow with rounded corners */}
+        <div className="relative h-[320px] md:h-[400px] rounded-2xl overflow-hidden shadow-lg">
+          <HeroSlideshow />
 
-        <div className="relative px-4 pt-12 pb-16">
           {/* Top bar with menu and logo */}
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
             <div className="flex items-center gap-2">
               <MainMenu />
               <span className="font-display font-bold text-foreground drop-shadow-lg">Surespot</span>
@@ -48,12 +45,12 @@ const Index = () => {
             <StateSelector compact />
           </div>
           
-          <div className="max-w-lg mx-auto text-center pt-8 text-white">
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-4">
             <h1 className="font-display text-3xl md:text-4xl drop-shadow-lg text-primary-foreground font-medium">
               Discover Your Surespot
             </h1>
 
-            <div className="flex gap-3 justify-center flex-wrap mt-6">
+            <div className="flex gap-3 justify-center flex-wrap mt-4">
               <Button onClick={() => navigate('/states')} variant="outline" className="gap-2 shadow-lg backdrop-blur-sm">
                  Browse States
               </Button>
@@ -72,7 +69,7 @@ const Index = () => {
         </div>
       </div>
 
-      <div className="px-4 py-6 max-w-lg mx-auto space-y-8">
+      <div className="px-4 py-6 max-w-lg mx-auto space-y-6">
         {/* State Quick Access */}
         <div>
           <h2 className="font-display text-lg font-semibold mb-3">Quick Access</h2>
