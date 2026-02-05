@@ -1,149 +1,205 @@
 
-# Direct Bank Transfer Payment System
+# Surespot Native App Launch Plan (Android & iOS)
 
-## Overview
-This plan replaces the Paystack-based payment system with a direct bank transfer flow where users transfer to a GTBank account and upload their receipt for manual admin verification.
-
-## Bank Account Details
-- **Bank**: GTBank
-- **Account Number**: 0747038903
-- **Account Name**: GRAND WORD MEDIA AND PUBLISHERS
+Great news! Your project is already set up with Capacitor and all the necessary dependencies. This plan will guide you through launching Surespot on both the Google Play Store and Apple App Store.
 
 ---
 
-## What Will Change
+## What You'll Need
 
-### User Experience Flow (All Payments)
+### For Android
+- A computer (Windows, Mac, or Linux)
+- Android Studio installed
+- Google Play Developer account ($25 one-time fee)
 
-**Current Flow:**
-1. User clicks "Pay" or "Upgrade"
-2. Paystack popup opens
-3. User pays via card/bank
-4. Automatic confirmation
-
-**New Flow:**
-1. User clicks "Pay" or "Upgrade"
-2. Dialog shows bank details (GTBank, 0747038903, GRAND WORD MEDIA AND PUBLISHERS)
-3. User transfers money via their bank app
-4. User uploads screenshot/receipt of transfer
-5. Admin reviews and approves
-6. User gets notified when approved
+### For iOS
+- A Mac computer (required for iOS development)
+- Xcode installed from the Mac App Store
+- Apple Developer Program membership ($99/year)
 
 ---
 
-## Technical Implementation
+## Step-by-Step Launch Process
 
-### 1. Database Changes
-Create the required storage bucket for receipt uploads (if not exists) and ensure the `payment_receipts` table is used for all payments.
+### Step 1: Export & Set Up Locally
 
-The existing `payment_receipts` table already has the needed structure:
-- `user_id`, `amount`, `receipt_url`, `bank_reference`, `status`, `payment_type`
+1. Click the **"Export to GitHub"** button in Lovable to transfer your project to your own repository
+2. Clone the repository to your local machine:
+   ```bash
+   git clone <your-github-repo-url>
+   cd surespot
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-We'll use this for both premium upgrades and booking payments by setting appropriate `payment_type` values.
+### Step 2: Add Native Platforms
 
-### 2. Files to Create
+Run these commands to add Android and iOS support:
 
-**`src/components/BankTransferDialog.tsx`** (New)
-- Reusable component showing bank details
-- Upload functionality for payment receipts
-- Displays status of pending receipts
-- Used for both premium upgrades and booking payments
+```bash
+# Add Android platform
+npx cap add android
 
-**`src/hooks/usePaymentReceipts.tsx`** (New)
-- Hook to submit payment receipts to `payment_receipts` table
-- Query user's payment receipt status
-- Upload receipt images to storage
+# Add iOS platform (Mac only)
+npx cap add ios
+```
 
-### 3. Files to Modify
+### Step 3: Build & Sync
 
-**`src/hooks/usePremiumPayment.tsx`**
-- Remove all Paystack integration code
-- Replace with bank transfer receipt submission
-- Store pending payment in `payment_receipts` with `payment_type: 'premium_upgrade'`
+```bash
+# Build the web app
+npm run build
 
-**`src/components/PremiumGate.tsx`**
-- Update to open BankTransferDialog instead of triggering Paystack
-- Show pending status if user has submitted a receipt awaiting approval
+# Sync web assets to native projects
+npx cap sync
+```
 
-**`src/hooks/usePayments.tsx`**
-- Remove Paystack integration from booking payments
-- Use bank transfer flow for bookings too
-- Submit to `payment_receipts` with `payment_type: 'booking'`
+### Step 4: Configure App Icons & Splash Screens
 
-**`src/components/BookingDialog.tsx`**
-- After booking is created, show bank transfer dialog
-- Allow users to upload receipt for booking payment
+Before submitting to app stores, you'll need proper app icons and splash screens:
 
-**`src/pages/AdminPanel.tsx`**
-- Add new tab for "Payment Receipts"
-- Show pending receipts with user info, amount, receipt image
-- Approve/Reject buttons
-- On approval: update profile `is_premium` or booking `payment_status`
+**Android** (`android/app/src/main/res/`):
+- Create icons in multiple sizes: `mipmap-hdpi`, `mipmap-mdpi`, `mipmap-xhdpi`, `mipmap-xxhdpi`, `mipmap-xxxhdpi`
+- Add a splash screen in `drawable/`
 
-### 4. Storage Setup
-- Create `payment-receipts` storage bucket for uploaded receipt images
-- Add RLS policies: users can upload own receipts, admins can view all
+**iOS** (`ios/App/App/Assets.xcassets/`):
+- Add `AppIcon.appiconset` with all required sizes
+- Configure `Splash.storyboard`
 
----
+**Tip**: Use a tool like [Capacitor Assets](https://github.com/ionic-team/capacitor-assets) or online icon generators to create all required sizes from a single image.
 
-## Component Structure
+### Step 5: Test on Devices/Emulators
 
-```text
-BankTransferDialog
-├── Bank Details Display
-│   ├── Bank Name: GTBank
-│   ├── Account Number: 0747038903
-│   ├── Account Name: GRAND WORD MEDIA AND PUBLISHERS
-│   └── Amount to transfer
-├── Receipt Upload Section
-│   ├── File picker (images/PDF)
-│   ├── Optional bank reference input
-│   └── Submit button
-└── Status Section
-    └── Shows if receipt is pending/approved/rejected
+```bash
+# Run on Android emulator or connected device
+npx cap run android
+
+# Run on iOS simulator or connected device (Mac only)
+npx cap run ios
+```
+
+### Step 6: Prepare for Production
+
+Before submitting to stores, update `capacitor.config.ts` to remove the development server URL:
+
+```typescript
+const config: CapacitorConfig = {
+  appId: 'app.lovable.18b17956fbce4d2ab62d0fdeb9b0e7b2',
+  appName: 'surespot',
+  webDir: 'dist',
+  // Remove the server block for production
+  plugins: {
+    AdMob: {
+      // Add your production AdMob App IDs here
+    }
+  }
+};
 ```
 
 ---
 
-## Admin Review Flow
+## Publishing to Google Play Store
 
-1. Admin navigates to Admin Panel → "Payment Receipts" tab
-2. Sees list of pending receipts with:
-   - User info (name, email)
-   - Amount
-   - Payment type (Premium Upgrade / Booking)
-   - Receipt image (viewable/downloadable)
-   - Bank reference (if provided)
-   - Submission date
-3. Admin clicks receipt to view full image
-4. Admin verifies against bank statement
-5. Admin clicks "Approve" or "Reject"
-   - **Approve Premium**: Sets `profiles.is_premium = true`
-   - **Approve Booking**: Sets `bookings.payment_status = 'completed'`
-   - **Reject**: Shows reason input, saves to record
+1. **Open Android Studio**:
+   ```bash
+   npx cap open android
+   ```
 
----
+2. **Generate Signed APK/Bundle**:
+   - Go to `Build > Generate Signed Bundle/APK`
+   - Create a new keystore (keep this file safe - you'll need it for all future updates!)
+   - Select "Android App Bundle" for Play Store submission
 
-## Files Summary
+3. **Create Play Store Listing**:
+   - Go to [Google Play Console](https://play.google.com/console)
+   - Create a new app
+   - Fill in app details, screenshots, privacy policy
+   - Upload your `.aab` file
 
-| Action | File |
-|--------|------|
-| Create | `src/components/BankTransferDialog.tsx` |
-| Create | `src/hooks/usePaymentReceipts.tsx` |
-| Modify | `src/hooks/usePremiumPayment.tsx` |
-| Modify | `src/components/PremiumGate.tsx` |
-| Modify | `src/hooks/usePayments.tsx` |
-| Modify | `src/components/BookingDialog.tsx` |
-| Modify | `src/pages/AdminPanel.tsx` |
-| Database | Create `payment-receipts` storage bucket |
+4. **Submit for Review**:
+   - Complete the content rating questionnaire
+   - Set up pricing and distribution
+   - Submit for review (usually 1-3 days)
 
 ---
 
-## Edge Cases Handled
+## Publishing to Apple App Store
 
-- User can see their pending receipt status
-- User cannot submit multiple receipts for same payment
-- Admin sees all pending receipts across payment types
-- Rejected receipts show reason and allow resubmission
-- Premium status only activates after admin approval
+1. **Open Xcode**:
+   ```bash
+   npx cap open ios
+   ```
 
+2. **Configure Signing**:
+   - Select your Team in Xcode project settings
+   - Enable "Automatically manage signing"
+   - Set Bundle Identifier to match your app ID
+
+3. **Archive & Upload**:
+   - Select "Any iOS Device" as the build target
+   - Go to `Product > Archive`
+   - Click "Distribute App" and follow the prompts
+
+4. **Create App Store Listing**:
+   - Go to [App Store Connect](https://appstoreconnect.apple.com)
+   - Create a new app
+   - Fill in app details, screenshots, privacy policy
+   - Link your uploaded build
+
+5. **Submit for Review**:
+   - Complete App Privacy details
+   - Submit for review (usually 1-7 days)
+
+---
+
+## Important Considerations
+
+### AdMob Setup
+Your app has AdMob configured with test IDs. Before going live:
+1. Create a real AdMob account at [admob.google.com](https://admob.google.com)
+2. Create ad units for your app
+3. Update `src/services/admob.ts` with your production ad unit IDs
+4. Set `USE_TEST_ADS = false`
+
+### App Store Requirements
+- **Privacy Policy**: Both stores require a privacy policy URL
+- **Screenshots**: Prepare screenshots for different device sizes
+- **App Description**: Write compelling store descriptions
+- **Age Rating**: Complete content rating questionnaires
+
+### Future Updates
+Whenever you make changes in Lovable:
+1. Pull the latest changes: `git pull`
+2. Rebuild and sync: `npm run build && npx cap sync`
+3. Test on device, then submit update to stores
+
+---
+
+## Technical Details
+
+**Current Configuration:**
+- **App ID**: `app.lovable.18b17956fbce4d2ab62d0fdeb9b0e7b2`
+- **App Name**: `surespot`
+- **Capacitor Version**: 8.x
+- **Platforms**: Android & iOS ready
+
+**Dependencies Already Installed:**
+- `@capacitor/core` - Core Capacitor functionality
+- `@capacitor/cli` - Command line tools
+- `@capacitor/android` - Android platform support
+- `@capacitor/ios` - iOS platform support
+- `@capacitor-community/admob` - Mobile ad support
+
+**Mobile-Optimized Features:**
+- Safe area handling for notched devices
+- Touch-optimized UI components
+- Service worker for offline support
+- Bottom navigation optimized for mobile
+
+---
+
+## Helpful Resources
+
+For more detailed guidance on the native app build process, check out the Lovable documentation on building mobile apps with Capacitor.
