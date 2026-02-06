@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocations } from '@/hooks/useLocations';
 import { Location } from '@/types';
@@ -7,10 +7,7 @@ import { Slider } from '@/components/ui/slider';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { MapPin, Navigation, Locate, AlertCircle, ExternalLink } from 'lucide-react';
-
-// Lazy load the map component to avoid SSR/ESM issues with Leaflet
-const LeafletMap = lazy(() => import('@/components/LeafletMap'));
+import { MapPin, Navigation, Locate, AlertCircle, ExternalLink, Map } from 'lucide-react';
 
 // Haversine formula to calculate distance between two points
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -37,11 +34,7 @@ const Nearby = () => {
   const [userPosition, setUserPosition] = useState<{ lat: number; lng: number } | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isLocating, setIsLocating] = useState(false);
-  const [radius, setRadius] = useState(10); // Default 10km radius
-  const [selectedLocation, setSelectedLocation] = useState<LocationWithDistance | null>(null);
-
-  // Default to Enugu city center if no user location
-  const defaultCenter: [number, number] = [6.4584, 7.5464];
+  const [radius, setRadius] = useState(25); // Default 25km radius
 
   // Request user's location
   const requestLocation = () => {
@@ -120,14 +113,26 @@ const Nearby = () => {
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${query}`, '_blank');
   };
 
+  const openAllOnMap = () => {
+    if (userPosition) {
+      // Open Google Maps centered on user's location
+      window.open(
+        `https://www.google.com/maps/@${userPosition.lat},${userPosition.lng},13z`,
+        '_blank'
+      );
+    }
+  };
+
   if (locationsLoading) {
     return (
       <div className="min-h-screen bg-background pb-20">
         <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg border-b px-4 py-4">
           <h1 className="font-display text-2xl font-bold">Nearby Places</h1>
         </div>
-        <div className="p-4">
-          <Skeleton className="h-[60vh] w-full rounded-xl" />
+        <div className="p-4 space-y-3">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-24 w-full rounded-xl" />
+          ))}
         </div>
       </div>
     );
@@ -142,16 +147,29 @@ const Nearby = () => {
             <MapPin className="w-6 h-6 text-primary" />
             Nearby Places
           </h1>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={requestLocation}
-            disabled={isLocating}
-            className="gap-1"
-          >
-            <Locate className="w-4 h-4" />
-            {isLocating ? 'Locating...' : 'Refresh'}
-          </Button>
+          <div className="flex gap-2">
+            {userPosition && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={openAllOnMap}
+                className="gap-1"
+              >
+                <Map className="w-4 h-4" />
+                View Map
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={requestLocation}
+              disabled={isLocating}
+              className="gap-1"
+            >
+              <Locate className="w-4 h-4" />
+              {isLocating ? '...' : 'Refresh'}
+            </Button>
+          </div>
         </div>
 
         {/* Radius Slider */}
@@ -161,11 +179,11 @@ const Nearby = () => {
             value={[radius]}
             onValueChange={(value) => setRadius(value[0])}
             min={1}
-            max={50}
+            max={100}
             step={1}
             className="flex-1"
           />
-          <Badge variant="secondary" className="whitespace-nowrap">
+          <Badge variant="secondary" className="whitespace-nowrap min-w-[60px] justify-center">
             {radius} km
           </Badge>
         </div>
@@ -185,40 +203,17 @@ const Nearby = () => {
         )}
       </div>
 
-      {/* Map Container */}
-      <div className="relative h-[60vh] w-full">
-        <Suspense fallback={
-          <div className="h-full w-full flex items-center justify-center bg-muted">
-            <div className="text-center">
-              <MapPin className="w-8 h-8 mx-auto mb-2 text-muted-foreground animate-pulse" />
-              <p className="text-sm text-muted-foreground">Loading map...</p>
-            </div>
-          </div>
-        }>
-          <LeafletMap
-            userPosition={userPosition}
-            nearbyLocations={nearbyLocations}
-            radius={radius}
-            defaultCenter={defaultCenter}
-            onLocationSelect={setSelectedLocation}
-          />
-        </Suspense>
-      </div>
-
       {/* Nearby Locations List */}
       <div className="p-4 space-y-3">
-        <h2 className="font-display font-semibold text-lg">
-          {nearbyLocations.length > 0 ? 'Closest to You' : 'No Places Nearby'}
-        </h2>
-
         {!userPosition && !locationError && (
           <Card>
-            <CardContent className="p-4 text-center">
-              <Locate className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground mb-3">
-                Enable location access to find places near you
+            <CardContent className="p-6 text-center">
+              <Locate className="w-12 h-12 mx-auto mb-3 text-primary" />
+              <h3 className="font-semibold mb-2">Enable Location Access</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Allow location access to discover amazing places near you
               </p>
-              <Button onClick={requestLocation} disabled={isLocating}>
+              <Button onClick={requestLocation} disabled={isLocating} className="w-full">
                 {isLocating ? 'Getting Location...' : 'Enable Location'}
               </Button>
             </CardContent>
@@ -227,8 +222,9 @@ const Nearby = () => {
 
         {nearbyLocations.length === 0 && userPosition && (
           <Card>
-            <CardContent className="p-4 text-center">
-              <MapPin className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+            <CardContent className="p-6 text-center">
+              <MapPin className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
+              <h3 className="font-semibold mb-2">No Places Found</h3>
               <p className="text-sm text-muted-foreground">
                 No places found within {radius}km. Try increasing the radius.
               </p>
@@ -236,24 +232,39 @@ const Nearby = () => {
           </Card>
         )}
 
-        {nearbyLocations.map((location) => (
+        {nearbyLocations.length > 0 && (
+          <h2 className="font-display font-semibold text-lg flex items-center gap-2">
+            <Navigation className="w-5 h-5 text-primary" />
+            Closest to You
+          </h2>
+        )}
+
+        {nearbyLocations.map((location, index) => (
           <Card
             key={location.id}
-            className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+            className="overflow-hidden cursor-pointer hover:shadow-md transition-all hover:scale-[1.01] active:scale-[0.99]"
             onClick={() => navigate(`/location/${location.id}`)}
           >
             <CardContent className="p-0 flex">
+              {/* Rank Badge */}
+              <div className="w-10 flex-shrink-0 bg-primary/5 flex items-center justify-center">
+                <span className="font-bold text-primary text-lg">
+                  {index + 1}
+                </span>
+              </div>
+
               {/* Image */}
-              <div className="w-24 h-24 flex-shrink-0">
+              <div className="w-20 h-24 flex-shrink-0">
                 <img
                   src={location.image_url || '/placeholder.svg'}
                   alt={location.name}
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
               </div>
 
               {/* Content */}
-              <div className="flex-1 p-3 flex flex-col justify-between">
+              <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
                 <div>
                   <h3 className="font-semibold text-sm line-clamp-1">{location.name}</h3>
                   <p className="text-xs text-muted-foreground line-clamp-1">
@@ -261,32 +272,33 @@ const Nearby = () => {
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <Badge variant="secondary" className="text-xs">
-                    {location.distance.toFixed(1)} km
+                <div className="flex items-center justify-between gap-2">
+                  <Badge variant="secondary" className="text-xs font-medium">
+                    📍 {location.distance.toFixed(1)} km
                   </Badge>
                   <div className="flex gap-1">
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="h-6 w-6 p-0"
+                      className="h-7 w-7 p-0"
                       onClick={(e) => {
                         e.stopPropagation();
                         openGoogleMaps(location);
                       }}
                     >
-                      <ExternalLink className="w-3.5 h-3.5" />
+                      <ExternalLink className="w-4 h-4" />
                     </Button>
                     <Button
                       size="sm"
-                      variant="ghost"
-                      className="h-6 w-6 p-0"
+                      variant="default"
+                      className="h-7 px-2 text-xs gap-1"
                       onClick={(e) => {
                         e.stopPropagation();
                         getDirections(location);
                       }}
                     >
-                      <Navigation className="w-3.5 h-3.5" />
+                      <Navigation className="w-3 h-3" />
+                      Go
                     </Button>
                   </div>
                 </div>
