@@ -1,7 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
-import { Icon, LatLngExpression } from 'leaflet';
 import { useLocations } from '@/hooks/useLocations';
 import { Location } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -10,36 +8,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MapPin, Navigation, Locate, AlertCircle, ExternalLink } from 'lucide-react';
-import 'leaflet/dist/leaflet.css';
 
-// Fix for default marker icons in Leaflet with Vite
-const defaultIcon = new Icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
-
-const userIcon = new Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
-
-const locationIcon = new Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
+// Lazy load the map component to avoid SSR/ESM issues with Leaflet
+const LeafletMap = lazy(() => import('@/components/LeafletMap').then(mod => ({ default: mod.LeafletMap })));
 
 // Haversine formula to calculate distance between two points
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -56,15 +27,6 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 }
 
-// Component to recenter map when user location changes
-function RecenterMap({ position }: { position: LatLngExpression }) {
-  const map = useMap();
-  useEffect(() => {
-    map.setView(position, map.getZoom());
-  }, [position, map]);
-  return null;
-}
-
 interface LocationWithDistance extends Location {
   distance: number;
 }
@@ -79,7 +41,7 @@ const Nearby = () => {
   const [selectedLocation, setSelectedLocation] = useState<LocationWithDistance | null>(null);
 
   // Default to Enugu city center if no user location
-  const defaultCenter: LatLngExpression = [6.4584, 7.5464];
+  const defaultCenter: [number, number] = [6.4584, 7.5464];
 
   // Request user's location
   const requestLocation = () => {
@@ -147,10 +109,6 @@ const Nearby = () => {
       .filter((loc) => loc.distance <= radius)
       .sort((a, b) => a.distance - b.distance);
   }, [userPosition, locations, radius]);
-
-  const mapCenter: LatLngExpression = userPosition
-    ? [userPosition.lat, userPosition.lng]
-    : defaultCenter;
 
   const openGoogleMaps = (location: Location) => {
     const query = encodeURIComponent(`${location.name} ${location.area} ${location.state} Nigeria`);
@@ -229,86 +187,22 @@ const Nearby = () => {
 
       {/* Map Container */}
       <div className="relative h-[60vh] w-full">
-        <MapContainer
-          center={mapCenter}
-          zoom={12}
-          scrollWheelZoom={true}
-          className="h-full w-full z-10"
-          style={{ background: 'hsl(var(--muted))' }}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        <Suspense fallback={
+          <div className="h-full w-full flex items-center justify-center bg-muted">
+            <div className="text-center">
+              <MapPin className="w-8 h-8 mx-auto mb-2 text-muted-foreground animate-pulse" />
+              <p className="text-sm text-muted-foreground">Loading map...</p>
+            </div>
+          </div>
+        }>
+          <LeafletMap
+            userPosition={userPosition}
+            nearbyLocations={nearbyLocations}
+            radius={radius}
+            defaultCenter={defaultCenter}
+            onLocationSelect={setSelectedLocation}
           />
-
-          {userPosition && (
-            <>
-              <RecenterMap position={[userPosition.lat, userPosition.lng]} />
-              
-              {/* User location marker */}
-              <Marker position={[userPosition.lat, userPosition.lng]} icon={userIcon}>
-                <Popup>
-                  <div className="text-center">
-                    <strong>You are here</strong>
-                  </div>
-                </Popup>
-              </Marker>
-
-              {/* Radius circle */}
-              <Circle
-                center={[userPosition.lat, userPosition.lng]}
-                radius={radius * 1000}
-                pathOptions={{
-                  color: 'hsl(var(--primary))',
-                  fillColor: 'hsl(var(--primary))',
-                  fillOpacity: 0.1,
-                }}
-              />
-            </>
-          )}
-
-          {/* Location markers */}
-          {nearbyLocations.map((location) => (
-            <Marker
-              key={location.id}
-              position={[Number(location.latitude), Number(location.longitude)]}
-              icon={locationIcon}
-              eventHandlers={{
-                click: () => setSelectedLocation(location),
-              }}
-            >
-              <Popup>
-                <div className="min-w-[200px]">
-                  <h3 className="font-semibold text-sm">{location.name}</h3>
-                  <p className="text-xs text-muted-foreground mb-2">
-                    {location.area}, {location.state}
-                  </p>
-                  <Badge variant="outline" className="text-xs mb-2">
-                    {location.distance.toFixed(1)} km away
-                  </Badge>
-                  <div className="flex gap-1 mt-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="flex-1 h-7 text-xs"
-                      onClick={() => navigate(`/location/${location.id}`)}
-                    >
-                      View
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="flex-1 h-7 text-xs"
-                      onClick={() => getDirections(location)}
-                    >
-                      <Navigation className="w-3 h-3 mr-1" />
-                      Go
-                    </Button>
-                  </div>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
-        </MapContainer>
+        </Suspense>
       </div>
 
       {/* Nearby Locations List */}
