@@ -159,23 +159,23 @@ export function LocationCard({ location, isFavorite, onToggleFavorite, onClick, 
         )}
 
         {/* Actions */}
-        <div className="flex gap-2">
+        <div className="flex gap-1.5">
           <Button 
             variant="outline" 
             size="sm" 
-            className="flex-1"
+            className="flex-1 h-8 text-xs px-2"
             onClick={openGoogleMaps}
           >
-            <ExternalLink className="w-4 h-4 mr-1" />
+            <ExternalLink className="w-3 h-3 mr-1" />
             Map
           </Button>
           <Button 
             variant="default" 
             size="sm" 
-            className="flex-1"
+            className="flex-1 h-8 text-xs px-2"
             onClick={getDirections}
           >
-            <Navigation className="w-4 h-4 mr-1" />
+            <Navigation className="w-3 h-3 mr-1" />
             Go
           </Button>
           {location.is_claimed && location.owner_business_id && (
@@ -185,10 +185,10 @@ export function LocationCard({ location, isFavorite, onToggleFavorite, onClick, 
                 <Button 
                   size="sm" 
                   variant="secondary"
-                  className="gap-1"
+                  className="h-8 text-xs px-2 gap-1"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <CalendarCheck className="w-4 h-4" />
+                  <CalendarCheck className="w-3 h-3" />
                   Book
                 </Button>
               }
