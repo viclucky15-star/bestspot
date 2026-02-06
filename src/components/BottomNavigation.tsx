@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Search, Calendar, MessageCircle, User } from 'lucide-react';
+import { Home, Search, Calendar, MapPin, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useConversations } from '@/hooks/useMessages';
 import { useAuth } from '@/hooks/useAuth';
@@ -7,8 +7,8 @@ import { useAuth } from '@/hooks/useAuth';
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
   { icon: Search, label: 'Explore', path: '/explore' },
+  { icon: MapPin, label: 'Nearby', path: '/nearby' },
   { icon: Calendar, label: 'Planner', path: '/planner' },
-  { icon: MessageCircle, label: 'Messages', path: '/messages' },
   { icon: User, label: 'Profile', path: '/profile' },
 ];
 

@@ -13,6 +13,7 @@ import { useServiceWorker } from "@/hooks/useServiceWorker";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Explore from "./pages/Explore";
+import Nearby from "./pages/Nearby";
 import States from "./pages/States";
 import Planner from "./pages/Planner";
 import Messages from "./pages/Messages";
@@ -53,6 +54,7 @@ const App = () => (
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/states" element={<States />} />
                   <Route path="/explore" element={<Explore />} />
+                  <Route path="/nearby" element={<Nearby />} />
                   <Route path="/planner" element={<Planner />} />
                   <Route path="/messages" element={<Messages />} />
                   <Route path="/profile" element={<Profile />} />
