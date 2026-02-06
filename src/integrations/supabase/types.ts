@@ -1261,6 +1261,66 @@ export type Database = {
           },
         ]
       }
+      service_providers: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          area: string | null
+          bio: string | null
+          created_at: string | null
+          full_name: string
+          id: string
+          is_approved: boolean | null
+          is_paid: boolean | null
+          payment_amount: number | null
+          payment_date: string | null
+          phone_number: string
+          provider_type: Database["public"]["Enums"]["service_provider_type"]
+          rejection_reason: string | null
+          state: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          area?: string | null
+          bio?: string | null
+          created_at?: string | null
+          full_name: string
+          id?: string
+          is_approved?: boolean | null
+          is_paid?: boolean | null
+          payment_amount?: number | null
+          payment_date?: string | null
+          phone_number: string
+          provider_type: Database["public"]["Enums"]["service_provider_type"]
+          rejection_reason?: string | null
+          state: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          area?: string | null
+          bio?: string | null
+          created_at?: string | null
+          full_name?: string
+          id?: string
+          is_approved?: boolean | null
+          is_paid?: boolean | null
+          payment_amount?: number | null
+          payment_date?: string | null
+          phone_number?: string
+          provider_type?: Database["public"]["Enums"]["service_provider_type"]
+          rejection_reason?: string | null
+          state?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_follows: {
         Row: {
           created_at: string
@@ -1340,6 +1400,7 @@ export type Database = {
         | "completed"
         | "refunded"
       payout_status: "pending" | "processing" | "completed" | "failed"
+      service_provider_type: "photographer" | "cinematographer" | "tour_guide"
       verification_status: "pending" | "under_review" | "approved" | "rejected"
     }
     CompositeTypes: {
@@ -1477,6 +1538,7 @@ export const Constants = {
         "refunded",
       ],
       payout_status: ["pending", "processing", "completed", "failed"],
+      service_provider_type: ["photographer", "cinematographer", "tour_guide"],
       verification_status: ["pending", "under_review", "approved", "rejected"],
     },
   },
