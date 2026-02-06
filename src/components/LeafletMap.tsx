@@ -56,7 +56,7 @@ function RecenterMap({ position }: { position: [number, number] }) {
   return null;
 }
 
-export function LeafletMap({ 
+export default function LeafletMap({ 
   userPosition, 
   nearbyLocations, 
   radius, 
@@ -65,7 +65,7 @@ export function LeafletMap({
 }: LeafletMapProps) {
   const navigate = useNavigate();
   
-  // Create icons only once
+  // Create icons inside component
   const userIcon = useMemo(() => createUserIcon(), []);
   const locationIcon = useMemo(() => createLocationIcon(), []);
 

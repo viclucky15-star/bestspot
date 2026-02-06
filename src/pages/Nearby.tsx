@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { MapPin, Navigation, Locate, AlertCircle, ExternalLink } from 'lucide-react';
 
 // Lazy load the map component to avoid SSR/ESM issues with Leaflet
-const LeafletMap = lazy(() => import('@/components/LeafletMap').then(mod => ({ default: mod.LeafletMap })));
+const LeafletMap = lazy(() => import('@/components/LeafletMap'));
 
 // Haversine formula to calculate distance between two points
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
