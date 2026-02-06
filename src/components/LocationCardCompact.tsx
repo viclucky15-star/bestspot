@@ -99,23 +99,23 @@ export function LocationCardCompact({ location, isFavorite, onToggleFavorite, on
         </p>
         
         {/* Map buttons */}
-        <div className="flex gap-1.5">
+        <div className="flex gap-1">
           <Button 
             variant="outline" 
             size="sm" 
-            className="flex-1 h-7 text-xs px-2"
+            className="flex-1 h-6 text-[10px] px-1.5"
             onClick={openGoogleMaps}
           >
-            <ExternalLink className="w-3 h-3 mr-1" />
+            <ExternalLink className="w-2.5 h-2.5 mr-0.5" />
             Map
           </Button>
           <Button 
             variant="default" 
             size="sm" 
-            className="flex-1 h-7 text-xs px-2"
+            className="flex-1 h-6 text-[10px] px-1.5"
             onClick={getDirections}
           >
-            <Navigation className="w-3 h-3 mr-1" />
+            <Navigation className="w-2.5 h-2.5 mr-0.5" />
             Go
           </Button>
           {location.is_claimed && location.owner_business_id && (
@@ -125,10 +125,10 @@ export function LocationCardCompact({ location, isFavorite, onToggleFavorite, on
                 <Button 
                   size="sm" 
                   variant="secondary"
-                  className="h-7 text-xs px-2 gap-1"
+                  className="h-6 text-[10px] px-1.5 gap-0.5"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <CalendarCheck className="w-3 h-3" />
+                  <CalendarCheck className="w-2.5 h-2.5" />
                   Book
                 </Button>
               }
