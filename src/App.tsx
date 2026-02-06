@@ -28,6 +28,7 @@ import BusinessBookings from "./pages/BusinessBookings";
 import BusinessWallet from "./pages/BusinessWallet";
 import BusinessReviews from "./pages/BusinessReviews";
 import AdminPanel from "./pages/AdminPanel";
+import ServiceProviders from "./pages/ServiceProviders";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -69,6 +70,7 @@ const App = () => (
                   <Route path="/business/bookings" element={<BusinessBookings />} />
                   <Route path="/business/wallet" element={<BusinessWallet />} />
                   <Route path="/business/reviews" element={<BusinessReviews />} />
+                  <Route path="/service-providers" element={<ServiceProviders />} />
                   <Route path="/admin" element={<AdminPanel />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
