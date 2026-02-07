@@ -69,7 +69,7 @@ interface StateContextType {
 
 const StateContext = createContext<StateContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'surespot_selected_state';
+const STORAGE_KEY = 'easterni_selected_state';
 
 export function StateProvider({ children }: { children: ReactNode }) {
   const [selectedState, setSelectedStateInternal] = useState<NigerianState | null>(() => {
