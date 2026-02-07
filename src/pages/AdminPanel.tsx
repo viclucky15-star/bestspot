@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useAdminLocationClaims } from '@/hooks/useLocationClaims';
 import { useAdminPaymentReceipts, PaymentReceiptWithUser } from '@/hooks/usePaymentReceipts';
+import { useAdminServiceProviders } from '@/hooks/useAdminServiceProviders';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { ServiceProviderAdminCard } from '@/components/admin/ServiceProviderAdminCard';
 import {
   ArrowLeft,
   FileText,
@@ -27,6 +29,7 @@ import {
   Receipt,
   Crown,
   CalendarIcon,
+  Camera,
 } from 'lucide-react';
 import { LocationClaim, VerificationStatus } from '@/types/business';
 
@@ -42,6 +45,15 @@ export default function AdminPanel() {
     approveReceipt,
     rejectReceipt,
   } = useAdminPaymentReceipts();
+  
+  const {
+    pendingProviders,
+    approvedProviders,
+    isLoading: providersLoading,
+    approveProvider,
+    rejectProvider,
+    markAsPaid,
+  } = useAdminServiceProviders();
   
   const [selectedClaim, setSelectedClaim] = useState<LocationClaim | null>(null);
   const [rejectReason, setRejectReason] = useState('');
@@ -241,11 +253,11 @@ export default function AdminPanel() {
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                  <DollarSign className="h-5 w-5 text-blue-500" />
+                  <Camera className="h-5 w-5 text-blue-500" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">10%</p>
-                  <p className="text-xs text-muted-foreground">Commission</p>
+                  <p className="text-2xl font-bold">{pendingProviders.length}</p>
+                  <p className="text-xs text-muted-foreground">Pending Providers</p>
                 </div>
               </div>
             </CardContent>
@@ -254,14 +266,17 @@ export default function AdminPanel() {
 
         {/* Tabs */}
         <Tabs defaultValue="payments">
-          <TabsList className="mb-4">
+          <TabsList className="mb-4 flex-wrap">
             <TabsTrigger value="payments">
-              Payment Receipts ({pendingReceipts.length})
+              Payments ({pendingReceipts.length})
+            </TabsTrigger>
+            <TabsTrigger value="providers">
+              Providers ({pendingProviders.length})
             </TabsTrigger>
             <TabsTrigger value="claims">
-              Location Claims ({pendingClaims.length})
+              Claims ({pendingClaims.length})
             </TabsTrigger>
-            <TabsTrigger value="venues">New Venues</TabsTrigger>
+            <TabsTrigger value="venues">Venues</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -384,6 +399,78 @@ export default function AdminPanel() {
                           {getPaymentTypeBadge(receipt.payment_type)}
                         </div>
                         {getReceiptStatusBadge(receipt.status)}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Service Providers Tab */}
+          <TabsContent value="providers" className="space-y-4">
+            {providersLoading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map(i => (
+                  <Skeleton key={i} className="h-32 w-full" />
+                ))}
+              </div>
+            ) : pendingProviders.length === 0 ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <CheckCircle className="h-12 w-12 mx-auto text-green-500 mb-3" />
+                  <h3 className="font-semibold">All caught up!</h3>
+                  <p className="text-sm text-muted-foreground">No pending provider applications</p>
+                </CardContent>
+              </Card>
+            ) : (
+              pendingProviders.map((provider) => (
+                <ServiceProviderAdminCard
+                  key={provider.id}
+                  provider={provider}
+                  onApprove={() => approveProvider.mutate(provider.id)}
+                  onReject={(reason) => rejectProvider.mutate({ providerId: provider.id, reason })}
+                  onMarkPaid={(amount) => markAsPaid.mutate({ providerId: provider.id, amount })}
+                  isApproving={approveProvider.isPending}
+                  isRejecting={rejectProvider.isPending}
+                  isMarkingPaid={markAsPaid.isPending}
+                />
+              ))
+            )}
+
+            {/* Approved Providers Awaiting Payment */}
+            {approvedProviders.filter(p => !p.is_paid).length > 0 && (
+              <div className="mt-8">
+                <h3 className="font-semibold mb-4">Awaiting Payment</h3>
+                <div className="space-y-4">
+                  {approvedProviders.filter(p => !p.is_paid).map((provider) => (
+                    <ServiceProviderAdminCard
+                      key={provider.id}
+                      provider={provider}
+                      onApprove={() => {}}
+                      onReject={() => {}}
+                      onMarkPaid={(amount) => markAsPaid.mutate({ providerId: provider.id, amount })}
+                      isMarkingPaid={markAsPaid.isPending}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Live Providers */}
+            {approvedProviders.filter(p => p.is_paid).length > 0 && (
+              <div className="mt-8">
+                <h3 className="font-semibold mb-4">Live Providers ({approvedProviders.filter(p => p.is_paid).length})</h3>
+                <div className="space-y-2">
+                  {approvedProviders.filter(p => p.is_paid).slice(0, 10).map((provider) => (
+                    <Card key={provider.id}>
+                      <CardContent className="p-3 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="font-medium">{provider.full_name}</span>
+                          <Badge variant="outline">{provider.provider_type}</Badge>
+                          <span className="text-sm text-muted-foreground">{provider.state}</span>
+                        </div>
+                        <Badge className="bg-green-600">Live</Badge>
                       </CardContent>
                     </Card>
                   ))}
