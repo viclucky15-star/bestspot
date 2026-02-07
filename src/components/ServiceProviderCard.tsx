@@ -30,7 +30,7 @@ export function ServiceProviderCard({ provider }: ServiceProviderCardProps) {
 
   const handleWhatsApp = () => {
     const message = encodeURIComponent(
-      `Hello ${provider.full_name}, I found your profile on Surespot and I'm interested in your ${SERVICE_PROVIDER_LABELS[provider.provider_type]} services.`
+      `Hello ${provider.full_name}, I found your profile on Easterni and I'm interested in your ${SERVICE_PROVIDER_LABELS[provider.provider_type]} services.`
     );
     window.open(`https://wa.me/${provider.phone_number.replace(/^0/, '234')}?text=${message}`, '_blank');
   };

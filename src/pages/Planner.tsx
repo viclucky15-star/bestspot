@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Plus, MapPin, Clock, Navigation, ExternalLink, Pencil, Trash2, CalendarDays, List } from 'lucide-react';
+import { Calendar, Plus, MapPin, Clock, Navigation, ExternalLink, Pencil, Trash2, CalendarDays, List, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -124,6 +124,26 @@ const Planner = () => {
             </CreatePlanDialog>
           </div>
         </div>
+
+        {/* Service Providers Quick Access */}
+        <Card className="mb-6 bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Camera className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-sm">Need a Photographer or Tour Guide?</h3>
+                  <p className="text-xs text-muted-foreground">Find verified professionals for your events</p>
+                </div>
+              </div>
+              <Button size="sm" variant="default" onClick={() => navigate('/service-providers')}>
+                Browse
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {loading ? (
           <div className="space-y-4">{[1, 2].map((i) => (<div key={i} className="h-32 bg-muted rounded-xl animate-pulse" />))}</div>

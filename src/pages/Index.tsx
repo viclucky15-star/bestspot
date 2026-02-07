@@ -40,14 +40,14 @@ const Index = () => {
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
             <div className="flex items-center gap-2">
               <MainMenu />
-              <span className="font-display font-bold text-foreground drop-shadow-lg">Surespot</span>
+              <span className="font-display font-bold text-foreground drop-shadow-lg">Easterni</span>
             </div>
             <StateSelector compact />
           </div>
           
           <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-4">
             <h1 className="font-display text-3xl md:text-4xl drop-shadow-lg text-primary-foreground font-medium">
-              Discover Your Surespot
+              Discover Eastern Nigeria
             </h1>
 
             <div className="flex gap-3 justify-center flex-wrap mt-4">

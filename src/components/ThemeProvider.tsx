@@ -10,7 +10,7 @@ interface ThemeProviderContextType {
 
 const ThemeProviderContext = createContext<ThemeProviderContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'surespot-theme';
+const STORAGE_KEY = 'easterni-theme';
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {

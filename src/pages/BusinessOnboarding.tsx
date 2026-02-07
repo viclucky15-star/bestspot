@@ -87,7 +87,7 @@ export default function BusinessOnboarding() {
               </div>
               <h2 className="text-2xl font-bold mb-2">Grow Your Business</h2>
               <p className="text-muted-foreground">
-                Join thousands of businesses on Surespot and reach more customers
+                Join thousands of businesses on Easterni and reach more customers
               </p>
             </div>
 
