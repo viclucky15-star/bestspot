@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
+export type PaymentType = 'premium_upgrade' | 'booking' | 'service_provider_payment';
+
 export interface PaymentReceipt {
   id: string;
   user_id: string;
@@ -10,7 +12,7 @@ export interface PaymentReceipt {
   receipt_url: string;
   bank_reference: string | null;
   status: 'pending' | 'approved' | 'rejected';
-  payment_type: 'premium_upgrade' | 'booking';
+  payment_type: PaymentType;
   rejection_reason: string | null;
   metadata: Record<string, unknown> | null;
   created_at: string;
@@ -47,7 +49,7 @@ export function usePaymentReceipts() {
   });
 
   // Check for pending receipt of a specific type
-  const getPendingReceipt = (paymentType: 'premium_upgrade' | 'booking', bookingId?: string) => {
+  const getPendingReceipt = (paymentType: PaymentType, bookingId?: string) => {
     if (!receipts) return null;
     return receipts.find(r => {
       if (r.status !== 'pending') return false;
@@ -55,6 +57,12 @@ export function usePaymentReceipts() {
       if (bookingId && r.metadata && (r.metadata as any).booking_id !== bookingId) return false;
       return true;
     });
+  };
+
+  // Get the latest receipt for a specific type
+  const getLatestReceipt = (paymentType: PaymentType) => {
+    if (!receipts) return null;
+    return receipts.find(r => r.payment_type === paymentType);
   };
 
   // Upload receipt image to storage
@@ -89,7 +97,7 @@ export function usePaymentReceipts() {
       amount: number;
       receiptFile: File;
       bankReference?: string;
-      paymentType: 'premium_upgrade' | 'booking';
+      paymentType: PaymentType;
       metadata?: Record<string, unknown>;
     }) => {
       if (!user) throw new Error('Not authenticated');
@@ -129,6 +137,7 @@ export function usePaymentReceipts() {
     receipts,
     isLoading,
     getPendingReceipt,
+    getLatestReceipt,
     submitReceipt,
   };
 }
@@ -210,6 +219,21 @@ export function useAdminPaymentReceipts() {
             .eq('id', bookingId);
 
           if (bookingError) throw bookingError;
+        }
+      } else if (receipt.payment_type === 'service_provider_payment') {
+        // Mark service provider as paid
+        const providerId = (receipt.metadata as any)?.provider_id;
+        if (providerId) {
+          const { error: providerError } = await supabase
+            .from('service_providers')
+            .update({
+              is_paid: true,
+              payment_amount: receipt.amount,
+              payment_date: new Date().toISOString(),
+            })
+            .eq('id', providerId);
+
+          if (providerError) throw providerError;
         }
       }
 
