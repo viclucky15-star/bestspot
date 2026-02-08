@@ -484,6 +484,80 @@ export type Database = {
           },
         ]
       }
+      hiking_trails: {
+        Row: {
+          created_at: string
+          description: string | null
+          difficulty: string
+          distance_km: number
+          elevation_gain_meters: number | null
+          end_point: Json | null
+          estimated_duration_minutes: number
+          gps_path: Json
+          highlights: string[] | null
+          id: string
+          image_url: string | null
+          is_featured: boolean | null
+          location_id: string
+          name: string
+          safety_notes: string | null
+          start_point: Json | null
+          trail_type: string
+          updated_at: string
+          waypoints: Json | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          difficulty: string
+          distance_km: number
+          elevation_gain_meters?: number | null
+          end_point?: Json | null
+          estimated_duration_minutes: number
+          gps_path?: Json
+          highlights?: string[] | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          location_id: string
+          name: string
+          safety_notes?: string | null
+          start_point?: Json | null
+          trail_type: string
+          updated_at?: string
+          waypoints?: Json | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          distance_km?: number
+          elevation_gain_meters?: number | null
+          end_point?: Json | null
+          estimated_duration_minutes?: number
+          gps_path?: Json
+          highlights?: string[] | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          location_id?: string
+          name?: string
+          safety_notes?: string | null
+          start_point?: Json | null
+          trail_type?: string
+          updated_at?: string
+          waypoints?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hiking_trails_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       likes: {
         Row: {
           created_at: string
@@ -1377,6 +1451,35 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_saved_trails: {
+        Row: {
+          created_at: string
+          id: string
+          trail_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          trail_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          trail_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_saved_trails_trail_id_fkey"
+            columns: ["trail_id"]
+            isOneToOne: false
+            referencedRelation: "hiking_trails"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

@@ -3,8 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Heart, MapPin, Clock, Wallet, Star, Calendar, ExternalLink, CalendarCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useHikingTrails } from '@/hooks/useHikingTrails';
 import { supabase } from '@/integrations/supabase/client';
 import { Location } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +14,7 @@ import { ShareButton } from '@/components/ShareButton';
 import { ClaimBusinessCTA } from '@/components/business/ClaimBusinessCTA';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { BookingDialog } from '@/components/BookingDialog';
+import { HikeTrailsTab } from '@/components/trails';
 
 const LocationDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,6 +25,10 @@ const LocationDetail = () => {
   
   const [location, setLocation] = useState<Location | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Fetch hiking trails for this location
+  const { trails, loading: trailsLoading } = useHikingTrails(id);
+  const isHikingLocation = location?.category === 'hiking';
 
   useEffect(() => {
     if (id) fetchLocation();
@@ -121,7 +128,7 @@ const LocationDetail = () => {
             </div>
             {location.rating && (
               <div className="flex items-center gap-1 bg-accent/20 px-2 py-1 rounded-lg">
-                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                <Star className="w-4 h-4 text-primary fill-primary" />
                 <span className="font-semibold">{location.rating}</span>
               </div>
             )}
@@ -193,6 +200,28 @@ const LocationDetail = () => {
             )}
           </div>
         </div>
+
+        {/* Hike Trails Tab - Only show for hiking locations */}
+        {isHikingLocation && (
+          <div className="mt-6 bg-card rounded-2xl border shadow-lg p-6">
+            <Tabs defaultValue="overview">
+              <TabsList className="w-full mb-4">
+                <TabsTrigger value="overview" className="flex-1">Overview</TabsTrigger>
+                <TabsTrigger value="trails" className="flex-1">
+                  🥾 Trails {trails.length > 0 && `(${trails.length})`}
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="overview">
+                <p className="text-muted-foreground text-sm">
+                  Explore the hiking trails available at this location. Switch to the Trails tab to view routes, difficulty levels, and plan your hike.
+                </p>
+              </TabsContent>
+              <TabsContent value="trails">
+                <HikeTrailsTab trails={trails} loading={trailsLoading} />
+              </TabsContent>
+            </Tabs>
+          </div>
+        )}
 
         {/* Claim Business CTA - Only show for unclaimed locations */}
         {!location.is_claimed && (
