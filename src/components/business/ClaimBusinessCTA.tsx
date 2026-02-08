@@ -45,7 +45,7 @@ export function ClaimBusinessCTA({ locationId, locationName }: ClaimBusinessCTAP
               <Building2 className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1">
-              <p className="font-medium">Own this business?</p>
+              <p className="font-medium">Own this location?</p>
               <p className="text-sm text-muted-foreground mb-3">
                 Claim {locationName} to manage your listing, respond to customers, and access analytics
               </p>
@@ -53,7 +53,7 @@ export function ClaimBusinessCTA({ locationId, locationName }: ClaimBusinessCTAP
                 size="sm" 
                 onClick={handleClaim}
               >
-                Claim This Business
+                Claim This Location
               </Button>
             </div>
           </div>

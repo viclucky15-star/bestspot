@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useFavorites } from '@/hooks/useFavorites';
 import { usePlannedEvents } from '@/hooks/usePlannedEvents';
 import { LocationCard } from '@/components/LocationCard';
+import { ServiceProviderStatusCard } from '@/components/ServiceProviderStatusCard';
 import { supabase } from '@/integrations/supabase/client';
 import { Profile as ProfileType } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -135,6 +136,9 @@ const Profile = () => {
       </div>
 
       <div className="px-4 py-6 max-w-lg mx-auto">
+        {/* Service Provider Status Card */}
+        <ServiceProviderStatusCard />
+
         <Tabs defaultValue="favorites">
           <TabsList className="w-full">
             <TabsTrigger value="favorites" className="flex-1 gap-2">

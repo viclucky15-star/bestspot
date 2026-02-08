@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { usePaymentReceipts, PaymentReceipt } from '@/hooks/usePaymentReceipts';
+import { usePaymentReceipts, PaymentReceipt, PaymentType } from '@/hooks/usePaymentReceipts';
 
 // Bank details
 const BANK_DETAILS = {
@@ -24,10 +24,12 @@ interface BankTransferDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   amount: number;
-  paymentType: 'premium_upgrade' | 'booking';
+  paymentType: PaymentType;
   metadata?: Record<string, unknown>;
   onSuccess?: () => void;
   existingReceipt?: PaymentReceipt | null;
+  title?: string;
+  description?: string;
 }
 
 export function BankTransferDialog({
@@ -38,6 +40,8 @@ export function BankTransferDialog({
   metadata,
   onSuccess,
   existingReceipt,
+  title = 'Bank Transfer Payment',
+  description,
 }: BankTransferDialogProps) {
   const { submitReceipt } = usePaymentReceipts();
   const [bankReference, setBankReference] = useState('');
@@ -184,9 +188,9 @@ export function BankTransferDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Bank Transfer Payment</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
-            Transfer {formatPrice(amount)} to the account below and upload your receipt
+            {description || `Transfer ${formatPrice(amount)} to the account below and upload your receipt`}
           </DialogDescription>
         </DialogHeader>
 
