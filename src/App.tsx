@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { StateProvider } from "@/hooks/useStateSelection";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { VoiceAssistant } from "@/components/VoiceAssistant";
+import { ServiceProviderPaymentBanner } from "@/components/ServiceProviderPaymentBanner";
 import { useServiceWorker } from "@/hooks/useServiceWorker";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -49,6 +50,7 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <ServiceWorkerInit />
+              <ServiceProviderPaymentBanner />
               <div className="min-h-screen pb-20">
                 <Routes>
                   <Route path="/" element={<Index />} />
