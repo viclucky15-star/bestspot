@@ -73,7 +73,7 @@ export function ServiceProviderCard({ provider }: ServiceProviderCardProps) {
                 <Phone className="w-4 h-4 mr-1" />
                 Call
               </Button>
-              <Button size="sm" onClick={handleWhatsApp} className="flex-1 bg-[hsl(var(--chart-2))] hover:bg-[hsl(var(--chart-2))]/90">
+              <Button size="sm" onClick={handleWhatsApp} className="flex-1 bg-[hsl(145_55%_25%)] hover:bg-[hsl(145_55%_20%)] text-white">
                 WhatsApp
               </Button>
             </div>
