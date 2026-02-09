@@ -50,21 +50,19 @@ const Index = () => {
               Discover Eastern Nigeria
             </h1>
 
-            <div className="flex gap-3 justify-center flex-wrap mt-4">
-              <Button onClick={() => navigate('/states')} variant="outline" className="gap-2 shadow-lg backdrop-blur-sm">
+            <div className="flex gap-2 justify-center flex-wrap mt-4">
+              <Button onClick={() => navigate('/states')} variant="outline" size="sm" className="gap-1.5 shadow-lg backdrop-blur-sm text-xs h-8 px-3">
                  Browse States
               </Button>
-              <Button onClick={() => navigate('/explore')} className="gap-2 shadow-lg">
-                <MapPin className="w-4 h-4" /> Explore Places
+              <Button onClick={() => navigate('/explore')} size="sm" className="gap-1.5 shadow-lg text-xs h-8 px-3">
+                <MapPin className="w-3.5 h-3.5" /> Explore
               </Button>
-            </div>
-
-            {/* Business Dashboard Button - Only visible to business owners */}
-            {isBusiness && <div className="mt-4">
-                <Button onClick={() => navigate('/business/dashboard')} variant="secondary" className="gap-2 shadow-lg">
-                  <Building2 className="w-4 h-4" /> Dashboard Panel
+              {isBusiness && (
+                <Button onClick={() => navigate('/business/dashboard')} variant="secondary" size="sm" className="gap-1.5 shadow-lg text-xs h-8 px-3">
+                  <Building2 className="w-3.5 h-3.5" /> Dashboard
                 </Button>
-              </div>}
+              )}
+            </div>
           </div>
         </div>
       </div>
