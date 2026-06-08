@@ -40,7 +40,7 @@ const Index = () => {
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
             <div className="flex items-center gap-2">
               <MainMenu />
-              <span className="font-display font-bold text-foreground drop-shadow-lg">Easterni</span>
+              <span className="font-display font-bold text-foreground drop-shadow-lg">tourguide</span>
             </div>
             <StateSelector compact />
           </div>

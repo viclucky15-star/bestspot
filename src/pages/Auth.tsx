@@ -136,7 +136,7 @@ const Auth = () => {
             description: "Your profile is pending admin approval. You'll be notified once approved." 
           });
         } else {
-          toast({ title: "Account created! 🎉", description: "Welcome to Easterni" });
+          toast({ title: "Account created! 🎉", description: "Welcome to tourguide" });
         }
         navigate('/');
       }
@@ -162,7 +162,7 @@ const Auth = () => {
               <Heart className="w-8 h-8 text-primary" />
             </div>
             <CardTitle className="font-display text-2xl">{isLogin ? 'Welcome Back' : 'Create Account'}</CardTitle>
-            <CardDescription>{isLogin ? 'Sign in to continue exploring' : 'Join Easterni today'}</CardDescription>
+            <CardDescription>{isLogin ? 'Sign in to continue exploring' : 'Join tourguide today'}</CardDescription>
           </CardHeader>
 
           <CardContent>

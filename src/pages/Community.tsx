@@ -138,7 +138,7 @@ const Community = () => {
                     onCommentAdded={refetch}
                   />
                   <ShareButton
-                    title={`Post by ${post.profile?.full_name || 'Easterni User'}`}
+                    title={`Post by ${post.profile?.full_name || 'tourguide User'}`}
                     text={post.content.slice(0, 100) + (post.content.length > 100 ? '...' : '')}
                     url={`${window.location.origin}/community#post-${post.id}`}
                     variant="ghost"
