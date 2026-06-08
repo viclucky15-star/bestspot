@@ -122,17 +122,17 @@ const BusinessAuth = () => {
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 minutes
 
-      // Store OTP in profile
+      // Store OTP in profiles_private (sensitive data isolated from public profiles)
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (currentUser) {
         await supabase
-          .from('profiles')
-          .update({
+          .from('profiles_private')
+          .upsert({
+            user_id: currentUser.id,
             phone_number: phoneData.phoneNumber,
             phone_verification_code: otp,
             phone_verification_expires_at: expiresAt,
-          })
-          .eq('id', currentUser.id);
+          }, { onConflict: 'user_id' });
       }
 
       // In production, you'd send this via SMS. For now, show it in toast for testing
@@ -170,32 +170,37 @@ const BusinessAuth = () => {
       if (!currentUser) throw new Error('Not authenticated');
 
       // Verify OTP
-      const { data: profile } = await supabase
-        .from('profiles')
+      const { data: privateData } = await supabase
+        .from('profiles_private')
         .select('phone_verification_code, phone_verification_expires_at')
-        .eq('id', currentUser.id)
+        .eq('user_id', currentUser.id)
         .single();
 
-      if (!profile?.phone_verification_code) {
+      if (!privateData?.phone_verification_code) {
         throw new Error('No verification code found');
       }
 
-      if (new Date(profile.phone_verification_expires_at!) < new Date()) {
+      if (new Date(privateData.phone_verification_expires_at!) < new Date()) {
         throw new Error('OTP has expired');
       }
 
-      if (profile.phone_verification_code !== phoneData.otp) {
+      if (privateData.phone_verification_code !== phoneData.otp) {
         throw new Error('Invalid OTP');
       }
 
-      // Mark phone as verified
+      // Clear verification code in private table
       await supabase
-        .from('profiles')
+        .from('profiles_private')
         .update({
-          phone_verified: true,
           phone_verification_code: null,
           phone_verification_expires_at: null,
         })
+        .eq('user_id', currentUser.id);
+
+      // Mark phone as verified on profile
+      await supabase
+        .from('profiles')
+        .update({ phone_verified: true })
         .eq('id', currentUser.id);
 
       toast({ title: "Phone Verified! ✅" });
