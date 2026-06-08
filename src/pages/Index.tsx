@@ -11,6 +11,7 @@ import { MainMenu } from '@/components/MainMenu';
 import { StateSelector } from '@/components/StateSelector';
 import { PremiumGate } from '@/components/PremiumGate';
 import { HeroSlideshow } from '@/components/HeroSlideshow';
+import tourguideLogo from '@/assets/tourguide-logo.png.asset.json';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const Index = () => {
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
             <div className="flex items-center gap-2">
               <MainMenu />
-              <span className="font-display font-bold text-foreground drop-shadow-lg">tourguide</span>
+              <img src={tourguideLogo.url} alt="Tourguide" className="w-9 h-9 rounded-lg object-contain bg-white/90 p-0.5 shadow-md" />
             </div>
             <StateSelector compact />
           </div>

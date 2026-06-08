@@ -9,7 +9,8 @@ import { usePremiumPayment } from '@/hooks/usePremiumPayment';
 import { usePaymentReceipts } from '@/hooks/usePaymentReceipts';
 import { useAuth } from '@/hooks/useAuth';
 import { BankTransferDialog } from '@/components/BankTransferDialog';
-import aiAssistantIcon from '@/assets/ai-assistant-icon.png';
+import tourguideLogo from '@/assets/tourguide-logo.png.asset.json';
+const aiAssistantIcon = tourguideLogo.url;
 
 // Type declarations for Web Speech API
 interface SpeechRecognitionEvent extends Event {
