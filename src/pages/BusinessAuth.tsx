@@ -122,17 +122,17 @@ const BusinessAuth = () => {
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 minutes
 
-      // Store OTP in profile
+      // Store OTP in profiles_private (sensitive data isolated from public profiles)
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       if (currentUser) {
         await supabase
-          .from('profiles')
-          .update({
+          .from('profiles_private')
+          .upsert({
+            user_id: currentUser.id,
             phone_number: phoneData.phoneNumber,
             phone_verification_code: otp,
             phone_verification_expires_at: expiresAt,
-          })
-          .eq('id', currentUser.id);
+          }, { onConflict: 'user_id' });
       }
 
       // In production, you'd send this via SMS. For now, show it in toast for testing
