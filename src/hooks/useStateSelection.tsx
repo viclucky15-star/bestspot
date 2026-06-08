@@ -19,7 +19,7 @@ export const STATES: StateInfo[] = [
     lat: 5.5320,
     lon: 7.4860,
     description: 'Known for commerce and the Aba market hub',
-    icon: '🛍️',
+    icon: '',
     color: 'from-blue-500 to-blue-600',
   },
   {
@@ -28,7 +28,7 @@ export const STATES: StateInfo[] = [
     lat: 6.2100,
     lon: 7.0700,
     description: 'Home to Onitsha, the commercial heartbeat',
-    icon: '🏛️',
+    icon: '',
     color: 'from-green-500 to-green-600',
   },
   {
@@ -37,7 +37,7 @@ export const STATES: StateInfo[] = [
     lat: 6.4584,
     lon: 7.5464,
     description: 'The Coal City with scenic hills and culture',
-    icon: '⛰️',
+    icon: '',
     color: 'from-orange-500 to-orange-600',
   },
   {
@@ -46,7 +46,7 @@ export const STATES: StateInfo[] = [
     lat: 6.3249,
     lon: 8.1137,
     description: 'Salt of the nation with rich agriculture',
-    icon: '🌾',
+    icon: '',
     color: 'from-amber-500 to-amber-600',
   },
   {
@@ -55,7 +55,7 @@ export const STATES: StateInfo[] = [
     lat: 5.4836,
     lon: 7.0333,
     description: 'Eastern heartland with vibrant nightlife',
-    icon: '🎭',
+    icon: '',
     color: 'from-purple-500 to-purple-600',
   },
 ];
