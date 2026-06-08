@@ -21,7 +21,7 @@ const States = () => {
       <div className="bg-gradient-to-br from-primary/20 via-background to-accent/10 px-4 pt-12 pb-8">
         <div className="flex items-center gap-2 mb-6">
           <MainMenu />
-          <span className="font-display font-bold text-foreground">Easterni</span>
+          <span className="font-display font-bold text-foreground">tourguide</span>
         </div>
 
         <div className="max-w-lg mx-auto text-center">

@@ -1,6 +1,6 @@
 {
-  "name": "Easterni",
-  "short_name": "Easterni",
+  "name": "tourguide",
+  "short_name": "tourguide",
   "description": "Discover romantic spots, picnic areas, hiking trails & events in South-East Nigeria",
   "start_url": "/",
   "display": "standalone",
