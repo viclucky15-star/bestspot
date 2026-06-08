@@ -170,32 +170,37 @@ const BusinessAuth = () => {
       if (!currentUser) throw new Error('Not authenticated');
 
       // Verify OTP
-      const { data: profile } = await supabase
-        .from('profiles')
+      const { data: privateData } = await supabase
+        .from('profiles_private')
         .select('phone_verification_code, phone_verification_expires_at')
-        .eq('id', currentUser.id)
+        .eq('user_id', currentUser.id)
         .single();
 
-      if (!profile?.phone_verification_code) {
+      if (!privateData?.phone_verification_code) {
         throw new Error('No verification code found');
       }
 
-      if (new Date(profile.phone_verification_expires_at!) < new Date()) {
+      if (new Date(privateData.phone_verification_expires_at!) < new Date()) {
         throw new Error('OTP has expired');
       }
 
-      if (profile.phone_verification_code !== phoneData.otp) {
+      if (privateData.phone_verification_code !== phoneData.otp) {
         throw new Error('Invalid OTP');
       }
 
-      // Mark phone as verified
+      // Clear verification code in private table
       await supabase
-        .from('profiles')
+        .from('profiles_private')
         .update({
-          phone_verified: true,
           phone_verification_code: null,
           phone_verification_expires_at: null,
         })
+        .eq('user_id', currentUser.id);
+
+      // Mark phone as verified on profile
+      await supabase
+        .from('profiles')
+        .update({ phone_verified: true })
         .eq('id', currentUser.id);
 
       toast({ title: "Phone Verified! ✅" });
