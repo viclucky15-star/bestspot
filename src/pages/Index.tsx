@@ -8,7 +8,7 @@ import { useUserRole } from '@/hooks/useUserRole';
 import { LocationCard } from '@/components/LocationCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
 import { MainMenu } from '@/components/MainMenu';
-import { StateSelector } from '@/components/StateSelector';
+
 import { PremiumGate } from '@/components/PremiumGate';
 import { HeroSlideshow } from '@/components/HeroSlideshow';
 import tourguideLogo from '@/assets/tourguide-logo.png.asset.json';
@@ -37,13 +37,10 @@ const Index = () => {
         <div className="relative h-[320px] md:h-[400px] rounded-2xl overflow-hidden shadow-lg">
           <HeroSlideshow />
 
-          {/* Top bar with menu and logo */}
+          {/* Top bar with logo (left) and menu (right) */}
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
-            <div className="flex items-center gap-2">
-              <MainMenu />
-              <img src={tourguideLogo.url} alt="Tourguide" className="w-9 h-9 rounded-lg object-contain bg-white/90 p-0.5 shadow-md" />
-            </div>
-            <StateSelector compact />
+            <img src={tourguideLogo.url} alt="Tourguide" className="w-9 h-9 rounded-lg object-contain bg-white/90 p-0.5 shadow-md" />
+            <MainMenu />
           </div>
           
           <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-4">

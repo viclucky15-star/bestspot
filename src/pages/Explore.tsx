@@ -5,7 +5,7 @@ import { useFavorites } from '@/hooks/useFavorites';
 import { useStateSelection } from '@/hooks/useStateSelection';
 import { LocationCardCompact } from '@/components/LocationCardCompact';
 import { FilterBar } from '@/components/FilterBar';
-import { StateSelector } from '@/components/StateSelector';
+import { MainMenu } from '@/components/MainMenu';
 import { FilterOptions, Category, NigerianState } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -71,7 +71,7 @@ const Explore = () => {
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg border-b px-4 py-4">
         <div className="flex items-center justify-between mb-4">
           <h1 className="font-display text-2xl font-bold">{getTitle()}</h1>
-          <StateSelector compact />
+          <MainMenu />
         </div>
         <FilterBar 
           filters={filters} 

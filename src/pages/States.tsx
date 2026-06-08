@@ -19,9 +19,9 @@ const States = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-gradient-to-br from-primary/20 via-background to-accent/10 px-4 pt-12 pb-8">
-        <div className="flex items-center gap-2 mb-6">
-          <MainMenu />
+        <div className="flex items-center justify-between mb-6">
           <span className="font-display font-bold text-foreground">tourguide</span>
+          <MainMenu />
         </div>
 
         <div className="max-w-lg mx-auto text-center">

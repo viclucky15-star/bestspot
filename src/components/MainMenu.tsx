@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, Sun, Moon, Monitor, Clock, Share2, Users, LogOut, ChevronRight, Building2, Shield } from 'lucide-react';
+import { Menu, Sun, Moon, Monitor, Clock, Share2, Users, LogOut, ChevronRight, Building2, Shield, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -12,6 +12,7 @@ import {
 import { useTheme } from '@/components/ThemeProvider';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useStateSelection, STATES } from '@/hooks/useStateSelection';
 import { supabase } from '@/integrations/supabase/client';
 import { Location } from '@/types';
 
@@ -27,6 +28,7 @@ export function MainMenu() {
   const { theme, setTheme } = useTheme();
   const { user, signOut } = useAuth();
   const { isBusiness, isAdmin } = useUserRole();
+  const { selectedState, setSelectedState } = useStateSelection();
   const [open, setOpen] = useState(false);
   const [recentlyViewed, setRecentlyViewed] = useState<RecentlyViewed[]>([]);
   const [loadingRecent, setLoadingRecent] = useState(false);
@@ -108,6 +110,36 @@ export function MainMenu() {
                 ))}
               </div>
             </div>
+
+            {/* State Selection */}
+            <div className="p-4 border-b">
+              <div className="flex items-center gap-2 mb-3">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <h3 className="text-sm font-medium text-muted-foreground">State</h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant={!selectedState ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedState(null)}
+                  className="h-8"
+                >
+                  All
+                </Button>
+                {STATES.map((state) => (
+                  <Button
+                    key={state.name}
+                    variant={selectedState === state.name ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedState(state.name)}
+                    className="h-8"
+                  >
+                    {state.name}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
 
             {/* Recently Viewed Section */}
             <div className="p-4 border-b">
