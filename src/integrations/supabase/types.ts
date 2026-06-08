@@ -1194,9 +1194,6 @@ export type Database = {
           is_online: boolean | null
           is_premium: boolean | null
           last_seen: string | null
-          phone_number: string | null
-          phone_verification_code: string | null
-          phone_verification_expires_at: string | null
           phone_verified: boolean | null
           premium_purchased_at: string | null
           updated_at: string
@@ -1213,9 +1210,6 @@ export type Database = {
           is_online?: boolean | null
           is_premium?: boolean | null
           last_seen?: string | null
-          phone_number?: string | null
-          phone_verification_code?: string | null
-          phone_verification_expires_at?: string | null
           phone_verified?: boolean | null
           premium_purchased_at?: string | null
           updated_at?: string
@@ -1232,13 +1226,37 @@ export type Database = {
           is_online?: boolean | null
           is_premium?: boolean | null
           last_seen?: string | null
-          phone_number?: string | null
-          phone_verification_code?: string | null
-          phone_verification_expires_at?: string | null
           phone_verified?: boolean | null
           premium_purchased_at?: string | null
           updated_at?: string
           username?: string | null
+        }
+        Relationships: []
+      }
+      profiles_private: {
+        Row: {
+          created_at: string
+          phone_number: string | null
+          phone_verification_code: string | null
+          phone_verification_expires_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          phone_number?: string | null
+          phone_verification_code?: string | null
+          phone_verification_expires_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          phone_number?: string | null
+          phone_verification_code?: string | null
+          phone_verification_expires_at?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
