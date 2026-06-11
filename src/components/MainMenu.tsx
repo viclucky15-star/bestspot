@@ -81,11 +81,16 @@ export function MainMenu() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="bg-background/50 backdrop-blur-sm">
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Open main menu"
+          className="bg-background/50 backdrop-blur-sm min-h-11 min-w-11"
+        >
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-80 p-0">
+      <SheetContent side="right" className="w-80 p-0">
         <SheetHeader className="p-4 border-b">
           <SheetTitle>Menu</SheetTitle>
         </SheetHeader>
