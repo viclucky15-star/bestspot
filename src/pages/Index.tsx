@@ -65,14 +65,14 @@ const Index = () => {
         </div>
       </div>
 
-      <div className="px-4 py-6 max-w-lg mx-auto space-y-6">
+      <div className="px-4 py-6 max-w-lg md:max-w-5xl mx-auto space-y-6">
         {/* State Quick Access */}
         <div>
           <h2 className="font-display text-lg font-semibold mb-3">Quick Access</h2>
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {STATES.map(state => <button key={state.name} onClick={() => navigate(`/explore?state=${state.name}`)} className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${selectedState === state.name ? 'bg-primary text-primary-foreground shadow-md' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'}`}>
-                <span>{state.icon}</span>
-                <span className="text-sm font-medium">{state.name}</span>
+          <div className="flex flex-wrap gap-1.5 pb-2">
+            {STATES.map(state => <button key={state.name} onClick={() => navigate(`/explore?state=${state.name}`)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full whitespace-nowrap transition-all ${selectedState === state.name ? 'bg-primary text-primary-foreground shadow-md' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'}`}>
+                <span className="text-sm">{state.icon}</span>
+                <span className="text-xs font-medium">{state.name}</span>
               </button>)}
           </div>
         </div>
@@ -115,13 +115,13 @@ const Index = () => {
             <Button variant="ghost" size="sm" onClick={() => navigate('/explore')}>See all</Button>
           </div>
           
-        {loading ? <div className="grid grid-cols-2 gap-3">
-              {[1, 2, 3, 4].map(i => <div key={i} className="h-48 bg-muted rounded-xl animate-pulse" />)}
+        {loading ? <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-48 bg-muted rounded-xl animate-pulse" />)}
             </div> : featured.length === 0 ? <div className="text-center py-8 bg-muted/50 rounded-xl">
               <p className="text-muted-foreground">No featured places {selectedState && `in ${selectedState}`} yet</p>
               <Button variant="link" onClick={() => navigate('/explore')}>Explore all locations</Button>
-            </div> : <div className="grid grid-cols-2 gap-3">
-              {featured.slice(0, 6).map(location => <LocationCard key={location.id} location={location} isFavorite={isFavorite(location.id)} onToggleFavorite={() => toggleFavorite(location.id)} onClick={() => navigate(`/location/${location.id}`)} compact />)}
+            </div> : <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {featured.slice(0, 8).map(location => <LocationCard key={location.id} location={location} isFavorite={isFavorite(location.id)} onToggleFavorite={() => toggleFavorite(location.id)} onClick={() => navigate(`/location/${location.id}`)} compact />)}
             </div>}
         </div>
 
