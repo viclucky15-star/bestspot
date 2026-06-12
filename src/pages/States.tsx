@@ -24,7 +24,7 @@ const States = () => {
           <MainMenu />
         </div>
 
-        <div className="max-w-lg mx-auto text-center">
+        <div className="max-w-lg md:max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm mb-4">
             <Sparkles className="w-4 h-4" />
             South-East Nigeria
@@ -39,8 +39,8 @@ const States = () => {
       </div>
 
       {/* State Cards */}
-      <div className="px-4 py-6 max-w-lg mx-auto">
-        <div className="grid gap-4">
+      <div className="px-4 py-6 max-w-lg md:max-w-5xl mx-auto">
+        <div className="grid gap-4 md:grid-cols-2">
           {STATES.map((state) => (
             <Card
               key={state.name}

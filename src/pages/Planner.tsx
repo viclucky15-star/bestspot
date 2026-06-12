@@ -97,7 +97,7 @@ const Planner = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="px-4 py-6 max-w-lg mx-auto">
+      <div className="px-4 py-6 max-w-lg md:max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="font-display text-2xl font-bold">My Plans</h1>
           <div className="flex items-center gap-2">
@@ -163,7 +163,7 @@ const Planner = () => {
             {upcomingEvents.length > 0 && (
               <div>
                 <h2 className="font-semibold text-lg mb-3">Upcoming</h2>
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {upcomingEvents.map((event) => (
                     <EventCard key={event.id} event={event} />
                   ))}
@@ -174,7 +174,7 @@ const Planner = () => {
             {pastEvents.length > 0 && (
               <div>
                 <h2 className="font-semibold text-lg mb-3 text-muted-foreground">Past Events</h2>
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {pastEvents.slice(0, 3).map((event) => (
                     <EventCard key={event.id} event={event} isPast />
                   ))}
