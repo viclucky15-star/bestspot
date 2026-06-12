@@ -62,7 +62,7 @@ const Community = () => {
         </div>
       </div>
 
-      <div className="p-4 max-w-lg mx-auto">
+      <div className="p-4 max-w-lg md:max-w-3xl mx-auto">
         {!user && (
           <div className="bg-gradient-to-r from-primary/10 to-accent/20 rounded-xl p-6 mb-6 text-center">
             <h3 className="font-semibold mb-2">Join the conversation</h3>

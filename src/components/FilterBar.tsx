@@ -15,12 +15,12 @@ interface FilterBarProps {
   showStateFilter?: boolean;
 }
 
-const categories: { value: Category | 'all'; label: string; icon: string }[] = [
-  { value: 'all', label: 'All', icon: '✨' },
-  { value: 'romantic', label: 'Romantic', icon: '💕' },
-  { value: 'picnic', label: 'Picnic', icon: '🧺' },
-  { value: 'event', label: 'Events', icon: '🎉' },
-  { value: 'hiking', label: 'Hiking', icon: '🥾' },
+const categories: { value: Category | 'all'; label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: 'romantic', label: 'Romantic' },
+  { value: 'picnic', label: 'Picnic' },
+  { value: 'event', label: 'Events' },
+  { value: 'hiking', label: 'Hiking' },
 ];
 
 const budgetLevels: { value: BudgetLevel | 'all'; label: string }[] = [
@@ -64,20 +64,19 @@ export function FilterBar({ filters, onFiltersChange, areas, showStateFilter = t
       </div>
 
       {/* Category pills - horizontal scroll */}
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+      <div className="flex flex-wrap gap-2 pb-2">
         {categories.map((cat) => (
           <button
             key={cat.value}
             onClick={() => onFiltersChange({ ...filters, category: cat.value })}
             className={cn(
-              "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
+              "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
               filters.category === cat.value
                 ? "bg-primary text-primary-foreground shadow-md"
                 : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
             )}
           >
-            <span>{cat.icon}</span>
-            <span>{cat.label}</span>
+            {cat.label}
           </button>
         ))}
       </div>

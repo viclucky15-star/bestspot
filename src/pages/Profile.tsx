@@ -77,7 +77,7 @@ const Profile = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-gradient-to-br from-primary/10 via-accent/20 to-secondary/30 px-4 pt-12 pb-8">
-        <div className="max-w-lg mx-auto">
+        <div className="max-w-lg md:max-w-5xl mx-auto">
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-center gap-4">
               <Avatar className="w-20 h-20 border-4 border-background shadow-lg">
@@ -135,7 +135,7 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className="px-4 py-6 max-w-lg mx-auto">
+      <div className="px-4 py-6 max-w-lg md:max-w-5xl mx-auto">
         {/* Service Provider Status Card */}
         <ServiceProviderStatusCard />
 
@@ -161,7 +161,7 @@ const Profile = () => {
                 <Button variant="outline" onClick={() => navigate('/explore')}>Explore Places</Button>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {favorites.map((fav) => fav.location && (
                   <LocationCard
                     key={fav.id}
