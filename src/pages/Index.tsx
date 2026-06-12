@@ -84,26 +84,20 @@ const Index = () => {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-4 gap-3">
-          {[{
-          icon: '💕',
-          label: 'Romantic',
-          category: 'romantic'
-        }, {
-          icon: '🧺',
-          label: 'Picnic',
-          category: 'picnic'
-        }, {
-          icon: '🎉',
-          label: 'Events',
-          category: 'event'
-        }, {
-          icon: '🥾',
-          label: 'Hiking',
-          category: 'hiking'
-        }].map(item => <button key={item.category} onClick={() => navigate(`/explore?category=${item.category}`)} className="flex flex-col items-center gap-2 p-4 bg-card rounded-xl border hover:shadow-md transition-shadow">
-              <span className="text-2xl">{item.icon}</span>
-              <span className="text-xs font-medium">{item.label}</span>
-            </button>)}
+          {[
+            { label: 'Romantic', category: 'romantic' },
+            { label: 'Picnic', category: 'picnic' },
+            { label: 'Events', category: 'event' },
+            { label: 'Hiking', category: 'hiking' },
+          ].map(item => (
+            <button
+              key={item.category}
+              onClick={() => navigate(`/explore?category=${item.category}`)}
+              className="flex items-center justify-center p-3 bg-card rounded-xl border hover:shadow-md hover:border-primary/40 transition-all"
+            >
+              <span className="text-sm font-medium">{item.label}</span>
+            </button>
+          ))}
         </div>
 
         {/* Featured Locations */}
