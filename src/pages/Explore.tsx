@@ -81,16 +81,15 @@ const Explore = () => {
         />
       </div>
 
-      <div className="px-4 py-6 max-w-lg mx-auto">
+      <div className="px-4 py-6 max-w-lg md:max-w-6xl mx-auto">
         {loading ? (
-          <div className="grid grid-cols-2 gap-3">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <Skeleton key={i} className="aspect-[4/3] rounded-xl" />
             ))}
           </div>
         ) : locations.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-4xl mb-4">🔍</p>
             <h3 className="font-display text-lg font-semibold mb-2">No locations found</h3>
             <p className="text-muted-foreground text-sm">Try adjusting your filters or selecting a different state</p>
           </div>
@@ -98,7 +97,7 @@ const Explore = () => {
           // Show flat grid when filtering by category
           <>
             <p className="text-sm text-muted-foreground mb-4">{locations.length} places found</p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {locations.map((location) => (
                 <LocationCardCompact
                   key={location.id}
@@ -125,7 +124,7 @@ const Explore = () => {
                     <h2 className="font-display font-semibold text-lg">{info.label}</h2>
                     <span className="text-xs text-muted-foreground">({categoryLocations.length})</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {categoryLocations.map((location) => (
                       <LocationCardCompact
                         key={location.id}
