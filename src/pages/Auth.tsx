@@ -72,7 +72,7 @@ const Auth = () => {
       .from('service_providers')
       .insert({
         user_id: userId,
-        provider_type: formData.providerType,
+        provider_type: formData.providerType as any,
         full_name: formData.fullName,
         phone_number: formData.phoneNumber,
         state: formData.state,
