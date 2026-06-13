@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { usePaymentReceipts } from '@/hooks/usePaymentReceipts';
 import { BankTransferDialog } from '@/components/BankTransferDialog';
-import { Camera, Video, Map, CheckCircle, Clock, XCircle, CreditCard, Eye, Loader2 } from 'lucide-react';
+import { Camera, Video, Map, Calendar, CheckCircle, Clock, XCircle, CreditCard, Eye, Loader2 } from 'lucide-react';
 import { SERVICE_PROVIDER_LABELS, ServiceProviderType } from '@/types/serviceProvider';
 
 const SERVICE_PROVIDER_FEE = 5000; // ₦5,000
@@ -16,6 +16,7 @@ const providerIcons: Record<ServiceProviderType, typeof Camera> = {
   photographer: Camera,
   cinematographer: Video,
   tour_guide: Map,
+  event_planner: Calendar,
 };
 
 export function ServiceProviderStatusCard() {
