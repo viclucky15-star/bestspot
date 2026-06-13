@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Camera, Video, Map, Users, Search } from 'lucide-react';
+import { ArrowLeft, Camera, Video, Map, Users, Search, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -14,6 +14,7 @@ const providerTypes: { value: ServiceProviderType | 'all'; label: string; icon: 
   { value: 'photographer', label: 'Photographers', icon: Camera },
   { value: 'cinematographer', label: 'Cinematographers', icon: Video },
   { value: 'tour_guide', label: 'Tour Guides', icon: Map },
+  { value: 'event_planner', label: 'Event Planners', icon: Calendar },
 ];
 
 const ServiceProviders = () => {

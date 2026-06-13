@@ -1,4 +1,4 @@
-import { Phone, MapPin, Camera, Video, Map } from 'lucide-react';
+import { Phone, MapPin, Camera, Video, Map, Calendar } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,7 @@ const providerIcons = {
   photographer: Camera,
   cinematographer: Video,
   tour_guide: Map,
+  event_planner: Calendar,
 };
 
 export function ServiceProviderCard({ provider }: ServiceProviderCardProps) {
