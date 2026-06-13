@@ -21,7 +21,7 @@ export function useServiceProviders(options: UseServiceProvidersOptions = {}) {
         .order('created_at', { ascending: false });
 
       if (providerType && providerType !== 'all') {
-        query = query.eq('provider_type', providerType);
+        query = query.eq('provider_type', providerType as any);
       }
 
       if (state && state !== 'all') {

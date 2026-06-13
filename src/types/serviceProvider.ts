@@ -1,4 +1,4 @@
-export type ServiceProviderType = 'photographer' | 'cinematographer' | 'tour_guide';
+export type ServiceProviderType = 'photographer' | 'cinematographer' | 'tour_guide' | 'event_planner';
 
 export interface ServiceProvider {
   id: string;
@@ -24,6 +24,7 @@ export const SERVICE_PROVIDER_LABELS: Record<ServiceProviderType, string> = {
   photographer: 'Photographer',
   cinematographer: 'Cinematographer',
   tour_guide: 'Tour Guide',
+  event_planner: 'Event Planner / Caterer',
 };
 
 export const NIGERIAN_STATES = [

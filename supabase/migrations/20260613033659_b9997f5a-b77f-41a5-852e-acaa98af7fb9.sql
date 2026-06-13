@@ -1,0 +1,1 @@
+ALTER TYPE public.service_provider_type ADD VALUE IF NOT EXISTS 'event_planner';

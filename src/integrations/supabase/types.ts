@@ -1521,7 +1521,11 @@ export type Database = {
         | "completed"
         | "refunded"
       payout_status: "pending" | "processing" | "completed" | "failed"
-      service_provider_type: "photographer" | "cinematographer" | "tour_guide"
+      service_provider_type:
+        | "photographer"
+        | "cinematographer"
+        | "tour_guide"
+        | "event_planner"
       verification_status: "pending" | "under_review" | "approved" | "rejected"
     }
     CompositeTypes: {
@@ -1659,7 +1663,12 @@ export const Constants = {
         "refunded",
       ],
       payout_status: ["pending", "processing", "completed", "failed"],
-      service_provider_type: ["photographer", "cinematographer", "tour_guide"],
+      service_provider_type: [
+        "photographer",
+        "cinematographer",
+        "tour_guide",
+        "event_planner",
+      ],
       verification_status: ["pending", "under_review", "approved", "rejected"],
     },
   },

@@ -10,6 +10,7 @@ import {
   Camera,
   Video,
   MapPin,
+  Calendar,
   Phone,
   CheckCircle,
   XCircle,
@@ -33,6 +34,7 @@ const providerTypeIcons: Record<ServiceProviderType, React.ElementType> = {
   photographer: Camera,
   cinematographer: Video,
   tour_guide: MapPin,
+  event_planner: Calendar,
 };
 
 export function ServiceProviderAdminCard({
